@@ -49,6 +49,15 @@ export const activeCountryApiSlice = apiSlice.injectEndpoints({
         }
       }),
     }),
+    countCountries: builder.query({
+      query: () => ({
+        url: `${ADMIN_COUNTRIES_URL}/country-counts`,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${getTokenFromLocalStorage()}`
+        }
+      }),
+    }),
   }),
 });
-export const { useCreateCountryMutation, useGetActiveCountriesQuery, useFindAllCountriesQuery, useUpdateCountryMutation, useDeleteCountryMutation } = activeCountryApiSlice;
+export const { useCreateCountryMutation, useGetActiveCountriesQuery, useFindAllCountriesQuery, useUpdateCountryMutation, useDeleteCountryMutation, useCountCountriesQuery } = activeCountryApiSlice;

@@ -8,13 +8,18 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { DataGrid } from "@mui/x-data-grid";
 import { useGetValidationCodeDetailsQuery } from "@/slices/validationCodeApiSlice";
-import { useGetAllVendorsByAdminQuery, useVerifyVendorByAdminMutation } from "@/slices/adminApliSlices";
+import {
+  useGetAllVendorsByAdminQuery,
+  useVerifyVendorByAdminMutation,
+} from "@/slices/vendorsApliSlices";
 import VerificationModal from "@/components/VerificationModal";
 import Head from "next/head";
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { TextField, InputAdornment, Box } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import { toast } from "react-toastify";
 
 const options = [
@@ -26,6 +31,7 @@ const ITEM_HEIGHT = 48;
 export default function UsersTable() {
   const [vendorId, setVendorId] = useState(null);
   const [isVerifiedVendors, setIsVerifiedVendors] = useState(true);
+  const [searchName, setSearchName] = useState("");
   const [vendorPage, setVendorPage] = useState(1);
   const [vendorPageSize, setVendorPageSize] = useState(10);
   const [codePage, setCodePage] = useState(1);
@@ -34,16 +40,28 @@ export default function UsersTable() {
   const [rows, setRows] = useState([]);
   const [vendorColumns, setVendorColumns] = useState([]);
   const [verificationCodes, setVerificationCodes] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
 
   const allVendorsQueryParams = {
     page: vendorPage,
     limit: vendorPageSize,
     is_verified: isVerifiedVendors,
+    name: searchName,
   };
 
   const [verifyVendor] = useVerifyVendorByAdminMutation();
-  const { data: allVendors, isLoading: isAllVendorsLoading, error: allVendorsError, refetch: fetchVendorsAgain } = useGetAllVendorsByAdminQuery(allVendorsQueryParams);
-  const { data: allCodes, refetch: fetchCodesAgain } = useGetValidationCodeDetailsQuery({ page: codePage, limit: codePageSize, isUsed: false });
+  const {
+    data: allVendors,
+    isLoading: isAllVendorsLoading,
+    error: allVendorsError,
+    refetch: fetchVendorsAgain,
+  } = useGetAllVendorsByAdminQuery(allVendorsQueryParams);
+  const { data: allCodes, refetch: fetchCodesAgain } =
+    useGetValidationCodeDetailsQuery({
+      page: codePage,
+      limit: codePageSize,
+      isUsed: false,
+    });
 
   const [isOpenVendors3DotsMenu, setIsOpenVendors3DotsMenu] = useState(null);
   const open3DotsMenu = Boolean(isOpenVendors3DotsMenu);
@@ -67,32 +85,86 @@ export default function UsersTable() {
     );
   };
 
+  const handleSearchValue = (event) => {
+    setSearchValue(event.target.value);
+  };
+  const handleGetSearchResult = () => {
+    setSearchName(searchValue);
+  };
+
   useEffect(() => {
     fetchVendorsAgain();
     fetchCodesAgain(); // Ensure codes are fetched whenever vendor filter changes
-  }, [fetchVendorsAgain, fetchCodesAgain, vendorPage, vendorPageSize, isVerifiedVendors]);
+  }, [
+    fetchVendorsAgain,
+    fetchCodesAgain,
+    vendorPage,
+    vendorPageSize,
+    isVerifiedVendors,
+  ]);
 
   useEffect(() => {
     if (allVendors) {
+      console.log(allVendors);
       if (allVendorsError) {
         setVendorColumns([
-          { field: "status", headerName: "Status Code", minWidth: 150, headerClassName: 'bg-[#22477F] text-slate-100 text-md' },
-          { field: "message", headerName: "Message", flex: 1, minWidth: 250, headerClassName: 'bg-[#22477F] text-slate-100 text-md' }
+          {
+            field: "status",
+            headerName: "Status Code",
+            minWidth: 150,
+            headerClassName: "bg-[#22477F] text-slate-100 text-md",
+          },
+          {
+            field: "message",
+            headerName: "Message",
+            flex: 1,
+            minWidth: 250,
+            headerClassName: "bg-[#22477F] text-slate-100 text-md",
+          },
         ]);
-        setRows([{ id: 1, status: allVendorsError?.status, message: allVendorsError?.data?.message }]);
+        setRows([
+          {
+            id: 1,
+            status: allVendorsError?.status,
+            message: allVendorsError?.data?.message,
+          },
+        ]);
       } else {
         setVendorColumns([
-          { field: "id", headerName: "ID", minWidth: 70, headerClassName: 'bg-[#22477F] text-slate-100 text-md' },
-          { field: "vendor_name", headerName: "Vendor name", flex: 1, minWidth: 150, headerClassName: 'bg-[#22477F] text-slate-100 text-md' },
-          { field: "email", headerName: "Email", flex: 1, minWidth: 220, headerClassName: 'bg-[#22477F] text-slate-100 text-md' },
-          { field: "country", headerName: "Country", flex: 1, minWidth: 150, headerClassName: 'bg-[#22477F] text-slate-100 text-md' },
+          {
+            field: "id",
+            headerName: "ID",
+            minWidth: 70,
+            headerClassName: "bg-[#22477F] text-slate-100 text-md",
+          },
+          {
+            field: "vendor_name",
+            headerName: "Vendor name",
+            flex: 1,
+            minWidth: 150,
+            headerClassName: "bg-[#22477F] text-slate-100 text-md",
+          },
+          {
+            field: "email",
+            headerName: "Email",
+            flex: 1,
+            minWidth: 220,
+            headerClassName: "bg-[#22477F] text-slate-100 text-md",
+          },
+          {
+            field: "country",
+            headerName: "Country",
+            flex: 1,
+            minWidth: 150,
+            headerClassName: "bg-[#22477F] text-slate-100 text-md",
+          },
           {
             field: "verified",
             headerName: "Verified",
             flex: 1,
             minWidth: 150,
             renderCell: (params) => (
-              <div style={{ display: "flex", alignItems: "center" }}>
+              <div>
                 {params?.row?.validation_code ? (
                   <DoneIcon style={{ color: "green" }} />
                 ) : (
@@ -100,7 +172,7 @@ export default function UsersTable() {
                 )}
               </div>
             ),
-            headerClassName: 'bg-[#22477F] text-slate-100 text-md'
+            headerClassName: "bg-[#22477F] text-slate-100 text-md",
           },
           {
             field: "verificationCode",
@@ -111,7 +183,13 @@ export default function UsersTable() {
               params?.row?.validation_code ? (
                 params?.row?.validation_code
               ) : (
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "start" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "start",
+                  }}
+                >
                   <EditNoteIcon
                     style={{ color: "black", cursor: "pointer" }}
                     onClick={() => {
@@ -121,25 +199,56 @@ export default function UsersTable() {
                   />
                 </div>
               ),
-            headerClassName: 'bg-[#22477F] text-slate-100 text-md'
+            headerClassName: "bg-[#22477F] text-slate-100 text-md",
           },
         ]);
         setRows(allVendors.data);
       }
+    } else {
+      setVendorColumns([
+        {
+          field: "status",
+          headerName: "Status Code",
+          minWidth: 150,
+          headerClassName: "bg-[#22477F] text-slate-100 text-md",
+        },
+        {
+          field: "message",
+          headerName: "Message",
+          flex: 1,
+          minWidth: 250,
+          headerClassName: "bg-[#22477F] text-slate-100 text-md",
+        },
+      ]);
+      setRows([
+        {
+          id: 1,
+          status: allVendorsError?.status,
+          message: allVendorsError?.data?.message,
+        },
+      ]);
     }
-  }, [allVendors, allVendorsError, fetchVendorsAgain]);
+  }, [allVendors, allVendorsError, fetchVendorsAgain, isVerifiedVendors]);
 
   useEffect(() => {
     if (allCodes) {
-      setVerificationCodes(allCodes.data.map((code) => ({
-        id: code.id,
-        code: code.code,
-      })));
+      setVerificationCodes(
+        allCodes.data.map((code) => ({
+          id: code.id,
+          code: code.code,
+        }))
+      );
     }
   }, [allCodes]);
 
   const VerificationCodesColumns = [
-    { field: "code", headerName: "Available Codes", flex: 1, minWidth: 200, headerClassName: 'bg-[#22477F] text-slate-100 text-md' },
+    {
+      field: "code",
+      headerName: "Available Codes",
+      flex: 1,
+      minWidth: 200,
+      headerClassName: "bg-[#22477F] text-slate-100 text-md",
+    },
   ];
 
   return (
@@ -153,7 +262,10 @@ export default function UsersTable() {
 
         <div className="w-full h-full mx-auto mb-7 px-2 md:px-7">
           <div className="my-7 text-left w-full">
-            <Link href={"/admin-dashboard"} className="font-koHo font-bold text-1xl text-blue-900 flex items-center justify-start">
+            <Link
+              href={"/admin-dashboard"}
+              className="font-koHo font-bold text-1xl text-blue-900 flex items-center justify-start"
+            >
               <ArrowBack /> Dashboard
             </Link>
           </div>
@@ -168,8 +280,8 @@ export default function UsersTable() {
                   <IconButton
                     aria-label="more"
                     id="long-button"
-                    aria-controls={open3DotsMenu ? 'long-menu' : undefined}
-                    aria-expanded={open3DotsMenu ? 'true' : undefined}
+                    aria-controls={open3DotsMenu ? "long-menu" : undefined}
+                    aria-expanded={open3DotsMenu ? "true" : undefined}
                     aria-haspopup="true"
                     onClick={handle3DotsClick}
                     color="primary"
@@ -178,14 +290,14 @@ export default function UsersTable() {
                   </IconButton>
                   <Menu
                     id="long-menu"
-                    MenuListProps={{ 'aria-labelledby': 'long-button' }}
+                    MenuListProps={{ "aria-labelledby": "long-button" }}
                     anchorEl={isOpenVendors3DotsMenu}
                     open={open3DotsMenu}
                     onClose={() => handle3DotsClose()}
                     PaperProps={{
                       style: {
                         maxHeight: ITEM_HEIGHT * 4.5,
-                        width: '20ch',
+                        width: "20ch",
                       },
                     }}
                   >
@@ -201,6 +313,33 @@ export default function UsersTable() {
                   </Menu>
                 </div>
               </div>
+              <Box
+                sx={{
+                  width: "100%",
+                  height: "auto",
+                  mt: "3rem",
+                  mb: "1rem",
+                }}
+              >
+                <TextField
+                  label="Search"
+                  variant="outlined"
+                  fullWidth
+                  value={searchValue}
+                  onChange={handleSearchValue}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <SearchIcon
+                          fontSize="large"
+                          sx={{ cursor: "pointer" }}
+                          onClick={handleGetSearchResult}
+                        />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Box>
               <div className="w-full h-[450px] overflow-x-auto shadow-lg">
                 <DataGrid
                   disableColumnMenu
@@ -208,6 +347,7 @@ export default function UsersTable() {
                   columns={vendorColumns}
                   pageSize={vendorPageSize}
                   pagination
+                  pageSizeOptions={[vendorPageSize]}
                   paginationMode="server"
                   rowCount={allVendors?.totalCount || 0}
                   paginationModel={{

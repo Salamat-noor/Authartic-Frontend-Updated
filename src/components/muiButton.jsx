@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import Link from "next/link";
@@ -9,12 +8,15 @@ export default function CustomButton({ title, }) {
   const [redirectionURL, setRedirectionURL] = useState('');
 
   useEffect(() => {
-    if (currentUser) {
-      currentUserRefetch()
-      const dynamicURL = currentUser?.subscriptionStatus?.subscriptionPlan?.name;
-      setRedirectionURL(dynamicURL)
+    if (title === "New order") {
+      if (currentUser && !isCurrentUserError) {
+        currentUserRefetch()
+        const dynamicURL = currentUser?.subscriptionStatus?.subscriptionPlan?.name;
+        setRedirectionURL(dynamicURL)
+      }
     }
-  }, [currentUser, currentUserRefetch])
+
+  }, [currentUser, currentUserRefetch, isCurrentUserError, title])
 
   return (
     <Link href={title === "Register" ? "/registration" : redirectionURL === "Pro" ? "/pro-plan-vendor"

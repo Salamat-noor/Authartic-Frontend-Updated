@@ -6,7 +6,7 @@ export const adminApiSlices = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getAllVendorsByAdmin: builder.query({
             query: (params) => ({
-                url: `${ADMIN_VENDORS_URL}/all-vendors?page=${params.page}&limit=${params.limit}&is_verified=${params.is_verified}`,
+                url: `${ADMIN_VENDORS_URL}/all-vendors?page=${params.page}&limit=${params.limit}&is_verified=${params.is_verified}&name=${params.name}`,
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${getTokenFromLocalStorage()}`
@@ -24,7 +24,17 @@ export const adminApiSlices = apiSlice.injectEndpoints({
                 }
             })
         }),
+
+        countVendors: builder.query({
+            query: () => ({
+                url: `${ADMIN_VENDORS_URL}/all-vendors`,
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${getTokenFromLocalStorage()}`
+                }
+            })
+        }),
     }),
 });
 
-export const { useGetAllVendorsByAdminQuery, useVerifyVendorByAdminMutation } = adminApiSlices;
+export const { useGetAllVendorsByAdminQuery, useVerifyVendorByAdminMutation, useCountVendorsQuery } = adminApiSlices;

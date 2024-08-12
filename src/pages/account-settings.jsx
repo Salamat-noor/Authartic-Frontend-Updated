@@ -1,21 +1,22 @@
-'use client'
+"use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { Edit } from "@mui/icons-material";
 import Image from "next/image";
 import Head from "next/head";
 import Link from "next/link";
 import { useUploadAttachmentMutation } from "@/slices/uploadAttachmentApiSlice";
-import { useUpdateProfileMutation, useGetProfileQuery } from "@/slices/userApiSlice";
-import { useGetActiveCountriesQuery } from "@/slices/activeCountryApiSlice";
+import {
+  useUpdateProfileMutation,
+  useGetProfileQuery,
+} from "@/slices/userApiSlice";
+import { useGetActiveCountriesQuery } from "@/slices/countriesApiSlice";
 import sample from "@/assets/images/sample.svg";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { WithAuth } from "@/components/withAuth";
 
 const AccountSettings = () => {
-  const Router = useRouter();
-
   // Define initial form data
   const initialFormData = {
     primary_content: "",
@@ -25,18 +26,21 @@ const AccountSettings = () => {
     other_links: ["", "", ""],
     newPickedImage: null,
     changedImageFile: null,
-    user_name: '',
+    user_name: "",
     social_media: ["", "", ""],
-    website_url: ''
+    website_url: "",
   };
+  const [subscriptionStatusName, setSubscriptionStatusName] = useState("None");
 
   // State to track which field is being edited
   const [editingField, setEditingField] = useState(null);
 
   // CUSTOM QUERY HOOKS
   const { data: activeCountries } = useGetActiveCountriesQuery();
-  const { data: userProfile, refetch: userProfileRefetch } = useGetProfileQuery();
-  const [updateUser, { isLoading: isUpdateLoading }] = useUpdateProfileMutation();
+  const { data: userProfile, refetch: userProfileRefetch } =
+    useGetProfileQuery();
+  const [updateUser, { isLoading: isUpdateLoading }] =
+    useUpdateProfileMutation();
   const [uploadAttachment] = useUploadAttachmentMutation();
 
   // REF HOOKS
@@ -52,10 +56,10 @@ const AccountSettings = () => {
       toast.info(file.name);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           changedImageFile: file,
-          newPickedImage: reader.result
+          newPickedImage: reader.result,
         }));
       };
       reader.readAsDataURL(file);
@@ -65,23 +69,24 @@ const AccountSettings = () => {
   const handleFormDataChange = useCallback((e) => {
     const { name, value } = e.target;
     if (Object.keys(initialFormData).includes(name)) {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   }, []);
 
   const handleCountryUpdate = (e) => {
     const selectedCountry = e.target.value;
-    setFormData(prev => ({ ...prev, country: Number(selectedCountry) }));
+    setFormData((prev) => ({ ...prev, country: Number(selectedCountry) }));
   };
 
   const handleSubmit = async () => {
     try {
-
       const uploadLogoData = new FormData();
-      uploadLogoData.append('file', formData.changedImageFile);
-      uploadLogoData.append('type', 'text/photo');
+      uploadLogoData.append("file", formData.changedImageFile);
+      uploadLogoData.append("type", "text/photo");
 
-      const uploadedLogo = formData.changedImageFile ? await uploadAttachment(uploadLogoData).unwrap() : null;
+      const uploadedLogo = formData.changedImageFile
+        ? await uploadAttachment(uploadLogoData).unwrap()
+        : null;
       const logoImageId = uploadedLogo?.id;
 
       const dataToSubmit = {
@@ -93,12 +98,12 @@ const AccountSettings = () => {
         social_media: formData.social_media,
         website_url: formData.website_url,
         other_links: formData.other_links,
-        attachment_id: logoImageId || formData.profileImage?.id
+        attachment_id: logoImageId || formData.profileImage?.id,
       };
 
       const responseUpdated = await updateUser(dataToSubmit).unwrap();
       toast.success("User Updated.");
-      console.log("User Updated ====> ", responseUpdated)
+      console.log("User Updated ====> ", responseUpdated);
       // Router.push('account-settings');
     } catch (error) {
       toast.error("Error in Submit");
@@ -116,9 +121,9 @@ const AccountSettings = () => {
         country: userProfile.country?.id || null,
         other_links: userProfile.other_links || ["", "", ""],
         profileImage: userProfile.vendor_logo || sample,
-        user_name: userProfile.vendor_name || '',
+        user_name: userProfile.vendor_name || "",
         social_media: userProfile.social_media || ["", "", ""],
-        website_url: userProfile.website_url || ''
+        website_url: userProfile.website_url || "",
       });
       setEditingField(null); // Reset editing field
     }
@@ -134,12 +139,21 @@ const AccountSettings = () => {
         country: userProfile.country?.id || null,
         other_links: userProfile.other_links || ["", "", ""],
         profileImage: userProfile.vendor_logo || sample,
-        user_name: userProfile.vendor_name || '',
+        user_name: userProfile.vendor_name || "",
         social_media: userProfile.social_media || ["", "", ""],
-        website_url: userProfile.website_url || ''
+        website_url: userProfile.website_url || "",
       });
+      console.log(userProfile);
     }
   }, [userProfile]);
+
+  useEffect(() => {
+    if (userProfile?.subscriptionStatus?.subscriptionPlan?.name) {
+      setSubscriptionStatusName(
+        userProfile?.subscriptionStatus?.subscriptionPlan?.name
+      );
+    }
+  }, [userProfile?.subscriptionStatus?.subscriptionPlan?.name]);
 
   return (
     <>
@@ -154,9 +168,12 @@ const AccountSettings = () => {
               {/* PROFILE IMAGE AND BRAND DESCRIPTION */}
               <div className="w-full md:max-w-[245px] h-auto flex flex-col items-center justify-start gap-2 text-black bg-[#ADA8A8] p-5 md:p-3 rounded-[28px]">
                 <figure className="block w-auto">
-
                   <Image
-                    src={formData.newPickedImage || formData.profileImage?.url || sample}
+                    src={
+                      formData.newPickedImage ||
+                      formData.profileImage?.url ||
+                      sample
+                    }
                     alt="profile-img"
                     width={153}
                     height={100}
@@ -169,7 +186,11 @@ const AccountSettings = () => {
                       ref={uploadPicRef}
                       onChange={handleFileChange}
                     />
-                    <button type="button" onClick={() => uploadPicRef.current.click()} className="mt-1">
+                    <button
+                      type="button"
+                      onClick={() => uploadPicRef.current.click()}
+                      className="mt-1"
+                    >
                       Change Logo
                     </button>
                   </figcaption>
@@ -178,7 +199,16 @@ const AccountSettings = () => {
                   <div className="w-full text-right font-light italic text-sm md:text-base px-3 flex items-center justify-between">
                     <label htmlFor="brandDesc">Brand Description:</label>
                     <label htmlFor="brandDesc">
-                      <Edit className="cursor-pointer" onClick={() => setEditingField(editingField === 'about_brand' ? null : 'about_brand')} />
+                      <Edit
+                        className="cursor-pointer"
+                        onClick={() =>
+                          setEditingField(
+                            editingField === "about_brand"
+                              ? null
+                              : "about_brand"
+                          )
+                        }
+                      />
                     </label>
                   </div>
                   <textarea
@@ -186,37 +216,63 @@ const AccountSettings = () => {
                     name="about_brand"
                     value={formData.about_brand}
                     onChange={handleFormDataChange}
-                    disabled={editingField !== 'about_brand'}
-                    className={`p-1 rounded-md overflow-scroll resize-none block w-full min-h-52 md:h-full outline-none mt-1 ${editingField === 'about_brand' ? 'bg-white text-black' : 'bg-inherit text-white'}`}
+                    disabled={editingField !== "about_brand"}
+                    className={`p-1 rounded-md overflow-scroll resize-none block w-full min-h-52 md:h-full outline-none mt-1 ${
+                      editingField === "about_brand"
+                        ? "bg-white text-black"
+                        : "bg-inherit text-white"
+                    }`}
                   ></textarea>
                 </div>
               </div>
 
               <form className="md:w-auto h-auto flex flex-col justify-between gap-2 sm:gap-3 md:gap-5 py-3">
                 {/* PRIMARY CONTENT AND PHONE AND WEBSITE_URL AND USER_NAME INPUTS  */}
-                {['primary_content', "user_name", 'phone', "website_url"].map((field, idx) => (
-                  <div key={idx} className="form-field w-full h-auto flex flex-col items-start gap-1">
-                    <div className="w-full flex items-center justify-between">
-                      <label htmlFor={field} className="font-normal text-base">
-                        {field.replace(/_/g, ' ').toUpperCase()}:
-                      </label>
-                      <label htmlFor={field} className="font-normal text-base">
-                        <Edit className="cursor-pointer hover:scale-125 hover:-rotate-45" onClick={() => setEditingField(editingField === field ? null : field)} />
-                      </label>
+                {["primary_content", "user_name", "phone", "website_url"].map(
+                  (field, idx) => (
+                    <div
+                      key={idx}
+                      className="form-field w-full h-auto flex flex-col items-start gap-1"
+                    >
+                      <div className="w-full flex items-center justify-between">
+                        <label
+                          htmlFor={field}
+                          className="font-normal text-base"
+                        >
+                          {field.replace(/_/g, " ").toUpperCase()}:
+                        </label>
+                        <label
+                          htmlFor={field}
+                          className="font-normal text-base"
+                        >
+                          <Edit
+                            className="cursor-pointer hover:scale-125 hover:-rotate-45"
+                            onClick={() =>
+                              setEditingField(
+                                editingField === field ? null : field
+                              )
+                            }
+                          />
+                        </label>
+                      </div>
+                      <div className="w-full pr-10">
+                        <input
+                          readOnly={editingField !== field}
+                          id={field}
+                          type={field === "website_url" ? "url" : "text"}
+                          name={field}
+                          value={formData[field]}
+                          onChange={handleFormDataChange}
+                          className={`border-none outline-none text-base font-bold ml-3 w-full px-1 py-2 rounded-sm ${
+                            editingField === field
+                              ? "bg-white text-black"
+                              : "bg-inherit text-white"
+                          }`}
+                        />
+                      </div>
                     </div>
-                    <div className="w-full pr-10">
-                      <input
-                        readOnly={editingField !== field}
-                        id={field}
-                        type={field === 'website_url' ? 'url' : 'text'}
-                        name={field}
-                        value={formData[field]}
-                        onChange={handleFormDataChange}
-                        className={`border-none outline-none text-base font-bold ml-3 w-full px-1 py-2 rounded-sm ${editingField === field ? 'bg-white text-black' : 'bg-inherit text-white'}`}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  )
+                )}
 
                 {/* COUNTRY SELECT BOX */}
                 <div className="form-field w-full h-auto flex flex-col items-start gap-1">
@@ -225,20 +281,35 @@ const AccountSettings = () => {
                       Country:
                     </label>
                     <label htmlFor="country" className="font-normal text-base">
-                      <Edit className="cursor-pointer hover:scale-125 hover:-rotate-45" onClick={() => setEditingField(editingField === 'country' ? null : 'country')} />
+                      <Edit
+                        className="cursor-pointer hover:scale-125 hover:-rotate-45"
+                        onClick={() =>
+                          setEditingField(
+                            editingField === "country" ? null : "country"
+                          )
+                        }
+                      />
                     </label>
                   </div>
                   <div className="w-full pr-10">
                     <select
                       id="country"
-                      className={`border-none outline-none text-base font-bold ml-3 w-full px-1 py-2 rounded-sm ${editingField === 'country' ? 'bg-white text-black' : 'bg-inherit text-white'}`}
+                      className={`border-none outline-none text-base font-bold ml-3 w-full px-1 py-2 rounded-sm ${
+                        editingField === "country"
+                          ? "bg-white text-black"
+                          : "bg-inherit text-white"
+                      }`}
                       name="country"
                       value={formData?.country || ""}
                       onChange={handleCountryUpdate}
-                      disabled={editingField !== 'country'}
+                      disabled={editingField !== "country"}
                     >
                       {activeCountries?.map((country) => (
-                        <option key={country.id} value={country.id} className="bg-black text-white">
+                        <option
+                          key={country.id}
+                          value={country.id}
+                          className="bg-black text-white"
+                        >
                           {country.name}
                         </option>
                       ))}
@@ -253,7 +324,16 @@ const AccountSettings = () => {
                       Other Links:
                     </label>
                     <label htmlFor="links" className="font-normal text-base">
-                      <Edit className="cursor-pointer hover:scale-125 hover:-rotate-45" onClick={() => setEditingField(editingField === 'other_links' ? null : 'other_links')} />
+                      <Edit
+                        className="cursor-pointer hover:scale-125 hover:-rotate-45"
+                        onClick={() =>
+                          setEditingField(
+                            editingField === "other_links"
+                              ? null
+                              : "other_links"
+                          )
+                        }
+                      />
                     </label>
                   </div>
                   {formData.other_links.map((link, idx) => (
@@ -265,11 +345,18 @@ const AccountSettings = () => {
                         onChange={(e) => {
                           const updatedLinks = [...formData.other_links];
                           updatedLinks[idx] = e.target.value;
-                          setFormData(prev => ({ ...prev, other_links: updatedLinks }));
+                          setFormData((prev) => ({
+                            ...prev,
+                            other_links: updatedLinks,
+                          }));
                         }}
                         name={`other_links_${idx}`}
-                        disabled={editingField !== 'other_links'}
-                        className={`border-none outline-none text-base font-bold ml-3 w-full px-1 py-2 rounded-sm ${editingField === 'other_links' ? 'bg-white text-black' : 'bg-inherit text-white'}`}
+                        disabled={editingField !== "other_links"}
+                        className={`border-none outline-none text-base font-bold ml-3 w-full px-1 py-2 rounded-sm ${
+                          editingField === "other_links"
+                            ? "bg-white text-black"
+                            : "bg-inherit text-white"
+                        }`}
                       />
                     </div>
                   ))}
@@ -278,11 +365,26 @@ const AccountSettings = () => {
                 {/* SOCIAL MEDIA LINKS */}
                 <div className="form-field w-full h-auto flex flex-col gap-3">
                   <div className="w-full flex items-center justify-between">
-                    <label htmlFor="socialLinks" className="font-normal text-base">
+                    <label
+                      htmlFor="socialLinks"
+                      className="font-normal text-base"
+                    >
                       Social Media:
                     </label>
-                    <label htmlFor="socialLinks" className="font-normal text-base">
-                      <Edit className="cursor-pointer hover:scale-125 hover:-rotate-45" onClick={() => setEditingField(editingField === 'social_media' ? null : 'social_media')} />
+                    <label
+                      htmlFor="socialLinks"
+                      className="font-normal text-base"
+                    >
+                      <Edit
+                        className="cursor-pointer hover:scale-125 hover:-rotate-45"
+                        onClick={() =>
+                          setEditingField(
+                            editingField === "social_media"
+                              ? null
+                              : "social_media"
+                          )
+                        }
+                      />
                     </label>
                   </div>
                   {formData.social_media.map((link, idx) => (
@@ -294,11 +396,18 @@ const AccountSettings = () => {
                         onChange={(e) => {
                           const updatedLinks = [...formData.social_media];
                           updatedLinks[idx] = e.target.value;
-                          setFormData(prev => ({ ...prev, social_media: updatedLinks }));
+                          setFormData((prev) => ({
+                            ...prev,
+                            social_media: updatedLinks,
+                          }));
                         }}
                         name={`social_media_${idx}`}
-                        disabled={editingField !== 'social_media'}
-                        className={`border-none outline-none text-base font-bold ml-3 w-full px-1 py-2 rounded-sm ${editingField === 'social_media' ? 'bg-white text-black' : 'bg-inherit text-white'}`}
+                        disabled={editingField !== "social_media"}
+                        className={`border-none outline-none text-base font-bold ml-3 w-full px-1 py-2 rounded-sm ${
+                          editingField === "social_media"
+                            ? "bg-white text-black"
+                            : "bg-inherit text-white"
+                        }`}
                       />
                     </div>
                   ))}
@@ -311,11 +420,20 @@ const AccountSettings = () => {
               <div className="w-full md:w-[500px] flex flex-col items-center justify-start gap-3 border-t-2 border-white py-3 font-KoHo text-base font-normal">
                 <h3>Current plan:</h3>
                 <div className="flex items-center justify-center gap-7 pl-16">
-                  <h2 className="text-[24px] font-bold">Pro</h2>
-                  <Link href={""} className="text-[12px] italic font-normal">change</Link>
+                  <h2 className="text-[24px] font-bold">
+                    {subscriptionStatusName}
+                  </h2>
+                  <Link
+                    href={"/package-plans"}
+                    className="text-[12px] italic font-normal"
+                  >
+                    change
+                  </Link>
                 </div>
                 <div className="mt-2">
-                  <Link href={""} className="italic font-normal text-base">Change Billing Information</Link>
+                  <Link href={""} className="italic font-normal text-base">
+                    Change Billing Information
+                  </Link>
                 </div>
               </div>
             </div>
@@ -348,4 +466,5 @@ const AccountSettings = () => {
   );
 };
 
-export default AccountSettings;
+// export default AccountSettings;
+export default WithAuth(AccountSettings, ["VENDOR"]);

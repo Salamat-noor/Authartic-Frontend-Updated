@@ -7,6 +7,7 @@ import { Button } from "@mui/material";
 import Footer from "@/components/footer";
 import { useGetMyCertificateInfoQuery } from "@/slices/certificateInfoApiSlice";
 import { useGetProfileQuery } from "@/slices/userApiSlice";
+import { WithAuth } from "@/components/withAuth";
 
 const index = () => {
   const [drafttext, setDraftText] = useState("Drafts")
@@ -110,4 +111,6 @@ const index = () => {
     </>
   );
 };
-export default index;
+// export default index;
+
+export default WithAuth(index, ['VENDOR']);

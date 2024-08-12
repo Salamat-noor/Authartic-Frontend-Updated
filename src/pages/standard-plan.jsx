@@ -20,6 +20,7 @@ import Footer from "@/components/footer";
 import { useRouter } from "next/router";
 import { useGetProfileQuery } from "@/slices/userApiSlice";
 import { useGetAllFontsQuery } from "@/slices/fontApiSlice";
+import { WithAuth } from "@/components/withAuth";
 
 const initialData = {
   name: "",
@@ -583,4 +584,6 @@ function Index() {
   );
 }
 
-export default Index;
+// export default Index;
+export default WithAuth(Index, ['VENDOR']);
+

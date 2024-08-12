@@ -17,6 +17,7 @@ import { useGetActiveCountriesQuery } from "@/slices/countriesApiSlice";
 import { useUploadAttachmentMutation } from "@/slices/uploadAttachmentApiSlice";
 import { toast } from "react-toastify";
 import { useRegisterMutation } from "@/slices/userApiSlice";
+import { WithAuth } from "@/components/withAuth";
 
 const CodeRegistration = () => {
   const [uploadResult, setUploadResult] = useState(null);
