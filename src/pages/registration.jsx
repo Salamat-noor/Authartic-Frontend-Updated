@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useGetValidationCodeByCodeMutation } from "@/slices/validationCodeApiSlice";
+import { WithAuth } from "@/components/withAuth";
 
 const Registration = () => {
   const router = useRouter();

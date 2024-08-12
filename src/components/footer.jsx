@@ -26,7 +26,7 @@ const Footer = () => {
             Terms
           </Typography>
         </Link>
-        <Link href="/contactUs">
+        <Link href="/contact-us">
           <Typography
             variant="body1"
             className="hover:underline font-kodchasan responsive-h1"

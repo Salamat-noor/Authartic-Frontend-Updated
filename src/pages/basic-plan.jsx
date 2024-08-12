@@ -19,7 +19,7 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { useSelector } from "react-redux";
+import { WithAuth } from "@/components/withAuth";
 
 const initialData = {
   name: "",
@@ -36,19 +36,19 @@ const initialData = {
 function Index() {
   const router = useRouter();
   const uploadProductImageRef = useRef(null);
-  const { data: currentUser, isLoading: isCurrentUserLoading, error: isCurrentUserError, refetch: currentUserRefetch } = useGetProfileQuery();
-  const [productImagePreview, setProductImagePreview] = useState({
-    productImagePreview: null,
-    customImagePreview: null,
-  });
+  const {
+    data: currentUser,
+    isLoading: isCurrentUserLoading,
+    error: isCurrentUserError,
+    refetch: currentUserRefetch,
+  } = useGetProfileQuery();
+  const [productImagePreview, setProductImagePreview] = useState(null);
+  console.log(productImagePreview);
   const [uploadProductImage] = useUploadAttachmentMutation();
   const [createCertificate] = usePostCertificateInfoMutation();
   const [formData, setFormData] = useState(initialData);
   const [acceptCertificate, setAcceptCertificate] = useState(false);
-  const [imageFiles, setImageFiles] = useState({
-    productImage: null,
-    customBgImage: null,
-  });
+  const [imageFiles, setImageFiles] = useState(null);
   const handleProductImageInputClick = () =>
     uploadProductImageRef.current.click();
 
@@ -56,14 +56,10 @@ function Index() {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       toast.success(selectedFile.name);
-      setImageFiles((prev) => {
-        return { ...prev, productImage: selectedFile };
-      });
+      setImageFiles(selectedFile);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProductImagePreview((prev) => {
-          return { ...prev, productImagePreview: reader.result };
-        });
+        setProductImagePreview(reader.result);
       };
       reader.readAsDataURL(selectedFile);
     }
@@ -77,9 +73,9 @@ function Index() {
     } else {
       try {
         // Upload Product Image
-        if (imageFiles.productImage) {
+        if (imageFiles) {
           const productImageFormData = new FormData();
-          productImageFormData.append("file", imageFiles.productImage);
+          productImageFormData.append("file", imageFiles);
           productImageFormData.append("type", "text/photo");
           const productImageResponse = await uploadProductImage(
             productImageFormData
@@ -107,12 +103,8 @@ function Index() {
           // Handle success - Reset form and show success message
           currentUserRefetch();
           setFormData(initialData);
-          setImageFiles({
-            productImage: null,
-          });
-          setProductImagePreview({
-            productImagePreview: null,
-          });
+          setImageFiles(null);
+          setProductImagePreview(null);
           setAcceptCertificate(false);
           toast.success("Certificate created successfully!");
           router.push("/home-after-login");
@@ -128,13 +120,9 @@ function Index() {
 
   const handleCancelSubmit = () => {
     setFormData(initialData);
-    setImageFiles({
-      productImage: null,
-    });
+    setImageFiles(null);
     setAcceptCertificate(false);
-    setProductImagePreview((prev) => {
-      return { ...prev, productImagePreview: null };
-    });
+    setProductImagePreview(null);
     toast.success("Certificate Cleared!");
   };
 
@@ -226,10 +214,10 @@ function Index() {
             {/* HANDLE PRODUCT IMAGE UPLOAD */}
             <Box className="md:bg-[#ADA8A8] bg-transparent rounded-br-[20px] rounded-bl-[20px] p-8 max-w-[280px] w-full mb-4 md:mb-0">
               <Button className="flex text-black bg-[#fff] rounded-[41.47px] px-4 py-4 gap-2">
-                {productImagePreview.productImagePreview ? (
+                {productImagePreview ? (
                   <Avatar
                     alt="Remy Sharp"
-                    src={productImagePreview.productImagePreview}
+                    src={productImagePreview}
                     sx={{ width: 46, height: 46 }}
                   />
                 ) : (
@@ -258,19 +246,28 @@ function Index() {
                 <legend className="bg-white text-sm text-black px-[3px] pb-[3px] tracking-tighter">
                   Number of Certificates
                 </legend>
-                {isDataLoaded &&
+                {isDataLoaded && (
                   <div className="w-full h-full">
-                    <input type="number"
+                    <input
+                      type="number"
                       name="number_of_certificate_select"
                       min={0}
-                      max={currentUser?.subscriptionStatus?.remaining_certificates}
+                      max={
+                        currentUser?.subscriptionStatus?.remaining_certificates
+                      }
                       id="number_of_certificate_select"
                       className="outline-none border-none w-full h-full"
                       value={formData.number_of_certificate}
-                      onChange={(e) => setFormData(prev => ({ ...prev, number_of_certificate: e.target.value }))} />
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          number_of_certificate: e.target.value,
+                        }))
+                      }
+                    />
                     <strong className="text-white text-sm">{`Remaining ${currentUser?.subscriptionStatus?.remaining_certificates}`}</strong>
                   </div>
-                }
+                )}
               </fieldset>
             </Box>
           </Box>
@@ -475,4 +472,5 @@ function Index() {
   );
 }
 
-export default Index;
+// export default Index;
+export default WithAuth(Index, ["VENDOR"]);

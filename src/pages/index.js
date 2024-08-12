@@ -15,9 +15,7 @@ export default function Home() {
       <Head>
         <title>Home Page</title>
       </Head>
-      <main
-        className={`min-h-screen w-full flex flex-col justify-between bg-white`}
-      >
+      <main className={`min-h-screen w-full flex flex-col justify-between bg-white`}>
         {/* Home Page Logo */}
         <div className="w-full flex justify-center items-center max-w-[1440px] mx-auto relative">
           <Image
@@ -31,21 +29,17 @@ export default function Home() {
             <RegisterBTN title={"Register"} />
           </div>
         </div>
+
         {/* Home Page main screen */}
         <div className="w-full flex justify-center items-center max-w-[1440px] mx-auto my-11">
           <div className="flex gap-7 sm:gap-0 items-center md:items-start justify-around w-full flex-col-reverse md:flex-row pb-7 md:pb-0">
             <div className="text-black flex flex-col items-center lg:items-start gap-4">
-              <h1
-                className={`text-[20px] md:text-[18px] lg:text-[20px] text-[#080808] font-light Koho-light`}
-              >
+              <h1 className={`text-[20px] md:text-[18px] lg:text-[20px] text-[#080808] font-light Koho-light`}>
                 FOR PERSONAL USE
               </h1>
 
               <div className="flex flex-col sm:flex-row  md:flex-col items-center justify-Center gap-3">
-                <Link
-                  href={"https://www.appstore.com/authartic"}
-                  target="_blank"
-                >
+                <Link href={"https://www.appstore.com/authartic"} target="_blank">
                   <div className="flex p-[5px] items-center bg-black md:w-[280px] lg:w- [300px] text-white rounded-3xl px-5 md:px-3 py-1 shadow-lg">
                     <div className="p-[5px] md:p-[10px]">
                       <div>
@@ -63,10 +57,7 @@ export default function Home() {
                   </div>
                 </Link>
 
-                <Link
-                  href={"https://play.google.com/store/apps/authartic"}
-                  target="_blank"
-                >
+                <Link href={"https://play.google.com/store/apps/authartic"} target="_blank" >
                   <div className="flex p-[5px] items-center bg-black md:w-[280px] lg:w- [300px] text-white rounded-3xl px-5 md:px-3 py-1 shadow-lg">
                     <div className="p-[5px] md:p-[10px]">
                       <div className="w-[55px] p-[5px]">

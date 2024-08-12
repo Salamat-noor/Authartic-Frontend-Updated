@@ -45,7 +45,7 @@ export default function PaginatedTable() {
   useEffect(() => {
     if (error) {
       toast.info(error?.message || error?.data?.message || 'An error occurred')
-      setTableRows([{ id: 1, code: error.data.message }]);
+      setTableRows([{ id: 1, code: error?.data?.message }]);
     } else {
       setTableRows(data?.data || []);
     }

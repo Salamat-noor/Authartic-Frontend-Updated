@@ -13,21 +13,21 @@ import { useRouter } from "next/router"; // Import useRouter from next/router
 
 
 const LoginForm = ({ title, from }) => {
+  const router = useRouter(); // Initialize useRouter hook
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState(""); // Track the selected role
-  const dispatch = useDispatch();
-  const router = useRouter(); // Initialize useRouter hook
+
   const [login] = useLoginMutation();
   const { userInfo } = useSelector((state) => state.auth);
+
   // Effect hook to handle redirect on login success
   React.useEffect(() => {
     if (userInfo) {
       if (userInfo.role === "ADMIN") {
         router.push("/admin-dashboard");
       } else if (userInfo.role === "VENDOR") {
-        // Redirect vendors based on plan
-        const hasPlan = userInfo.plan === "pro"; // Replace with actual plan check logic
+        const hasPlan = userInfo.plan === "pro";
         if (hasPlan) {
           router.push("/issue-certificate");
         } else {
@@ -73,7 +73,6 @@ const LoginForm = ({ title, from }) => {
         // Clear the input fields and role selection after successful login
         setEmail("");
         setPassword("");
-        setRole("");
       }
     } catch (err) {
       const errorMessage =

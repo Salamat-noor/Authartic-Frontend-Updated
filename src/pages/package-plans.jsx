@@ -5,6 +5,7 @@ import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { useGetsubscrptionPlanQuery } from "@/slices/packageDataApiSlice";
 import { useSelector } from "react-redux";
+import { WithAuth } from "@/components/withAuth";
 
 const index = () => {
   const [isUserValidated, setIsUserValidated] = useState(null);
@@ -59,4 +60,6 @@ const index = () => {
   );
 };
 
-export default index;
+// export default index;
+export default WithAuth(index, ['VENDOR']);
+

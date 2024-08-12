@@ -55,7 +55,7 @@ export default function PaginatedTable() {
 
     useEffect(() => {
         if (allFontsCountData) {
-            setTotalCount(allFontsCountData.totalCount || 0);
+            setTotalCount(allFontsCountData.totalFonts || 0);
         }
     }, [allFontsCountData]);
 
@@ -70,7 +70,7 @@ export default function PaginatedTable() {
             const sortedRows = [...allFontsData.data].sort((a, b) => a.id - b.id);
             setRows(sortedRows);
         }
-    }, [allFontsData]);
+    }, [allFontsData, setIsActiveFont],);
 
     // Handle three dots menu
     const [openClose3DotsMenu, setOpenClose3DotsMenu] = useState(null);
@@ -98,7 +98,6 @@ export default function PaginatedTable() {
 
     useEffect(() => {
         const setActiveOrNot = isActive ? 1 : 2;
-        console.log(setActiveOrNot)
     }, [isActive])
 
     // Handle Edit Click

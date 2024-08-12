@@ -33,7 +33,16 @@ export const validationCodeApiSlice = apiSlice.injectEndpoints({
         }
       }),
     }),
+    countCodes: builder.query({
+      query: () => ({
+        url: `${CREATE_VAIDATION_CODE_URL}/count`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${getTokenFromLocalStorage()}`
+        }
+      }),
+    }),
   }),
 });
 
-export const { useCreateValidationCodeMutation, useGetValidationCodeByCodeMutation, useGetValidationCodeDetailsQuery } = validationCodeApiSlice;
+export const { useCreateValidationCodeMutation, useGetValidationCodeByCodeMutation, useGetValidationCodeDetailsQuery, useCountCodesQuery } = validationCodeApiSlice;
