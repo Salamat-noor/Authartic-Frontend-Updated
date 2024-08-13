@@ -168,7 +168,7 @@ const CodeRegistration = () => {
 
           // Send registration request
           const response = await register(registerData).unwrap();
-          console.log("Registration successful", response);
+   
           toast.success("Registration successful!");
 
           // Redirect on success

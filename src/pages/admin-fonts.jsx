@@ -114,7 +114,6 @@ export default function PaginatedTable() {
             await deleteFont(id).unwrap();
             allFontDataRefetch();
         } catch (error) {
-            console.log("Deleted Api Error ", error);
         }
     };
 
@@ -147,7 +146,6 @@ export default function PaginatedTable() {
                 handleModalClose();
             }
         } catch (error) {
-            console.log('Failed to save font:', error);
         }
     };
 

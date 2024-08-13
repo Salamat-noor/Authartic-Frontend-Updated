@@ -35,7 +35,7 @@ export default function PackageCard({ data }) {
       }
 
     } catch (err) {
-      console.error("Caught Error:", err);
+
 
       if (err?.response?.data) {
         toast.error(err.response.data.message || "An unknown error occurred");

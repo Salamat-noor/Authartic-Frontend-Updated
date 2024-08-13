@@ -43,7 +43,7 @@ function Index() {
     refetch: currentUserRefetch,
   } = useGetProfileQuery();
   const [productImagePreview, setProductImagePreview] = useState(null);
-  console.log(productImagePreview);
+
   const [uploadProductImage] = useUploadAttachmentMutation();
   const [createCertificate] = usePostCertificateInfoMutation();
   const [formData, setFormData] = useState(initialData);
@@ -112,7 +112,6 @@ function Index() {
           toast.error("Product image not provided.");
         }
       } catch (error) {
-        console.error("Error during submission:", error);
         toast.error("Failed to create certificate. Please try again.");
       }
     }

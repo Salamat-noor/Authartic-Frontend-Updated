@@ -12,7 +12,12 @@ const CertificateCard = ({ data }) => {
     <div className="w-full flex items-center flex-col sm:flex-row  justify-between gap-[1vw] py-3 px-1 sm:px-5">
       <div className="w-full flex items-center justify-evenly sm:justify-between">
         <div className="">
-          <Image src={productImgUrl || sampleIMG} alt="sample" width={168} height={126} />
+          <Image
+            src={productImgUrl || sampleIMG}
+            alt="sample"
+            width={168}
+            height={126}
+          />
         </div>
         <div className="flex flex-col gap-1">
           <h3 className="font-koho text-[#080808] font-light text-[16px] md:text-[20px]">
@@ -27,7 +32,9 @@ const CertificateCard = ({ data }) => {
         </div>
       </div>
       <div className="w-full sm:w-1/2 flex-col pl-[5vw] items-center sm:items-end justify-center gap-3 flex">
-        <Link href={`/issue-certificate/?saved_draft=${data?.saved_draft}&id=${data?.id}`}>
+        <Link
+          href={`/issue-certificate/?saved_draft=${data?.saved_draft}&id=${data?.id}`}
+        >
           <Button
             className={`bg-[#22477F] text-white w-[189px] h-[26px] hover:text-black rounded-[7px] font-bold font-kodchasan md:text-[16px] lg:text-[20px] capitalize leading-[26px]`}
           >
@@ -39,11 +46,15 @@ const CertificateCard = ({ data }) => {
         >
           Reissue existing
         </Button>
-        <Button
-          className={`bg-[#22477F] text-white w-[189px] h-[26px] hover:text-black rounded-[7px] font-bold font-kodchasan md:text-[16px] lg:text-[20px] capitalize leading-[26px]`}
+        <Link
+          href={`/issue-certificate/?saved_draft=${data?.saved_draft}&id=${data?.id}`}
         >
-          Report issue
-        </Button>
+          <Button
+            className={`bg-[#22477F] text-white w-[189px] h-[26px] hover:text-black rounded-[7px] font-bold font-kodchasan md:text-[16px] lg:text-[20px] capitalize leading-[26px]`}
+          >
+            Report issue
+          </Button>
+        </Link>
       </div>
     </div>
   );

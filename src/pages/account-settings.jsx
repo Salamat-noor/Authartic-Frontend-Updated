@@ -103,11 +103,10 @@ const AccountSettings = () => {
 
       const responseUpdated = await updateUser(dataToSubmit).unwrap();
       toast.success("User Updated.");
-      console.log("User Updated ====> ", responseUpdated);
+   
       // Router.push('account-settings');
     } catch (error) {
       toast.error("Error in Submit");
-      console.error(error);
     }
   };
 
@@ -143,7 +142,6 @@ const AccountSettings = () => {
         social_media: userProfile.social_media || ["", "", ""],
         website_url: userProfile.website_url || "",
       });
-      console.log(userProfile);
     }
   }, [userProfile]);
 

@@ -37,8 +37,27 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    resendVerificationEmail: builder.mutation({
+      query: (email) => ({
+        url: 'auth/resend-verification-email',
+        method: 'POST',
+        body: email,
+      }),
+    }),
+    activateEmail: builder.query({
+      query: (token) => ({
+        url: `auth/activate?token=${token}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useGetProfileQuery, useRegisterMutation, useUpdateProfileMutation } =
-  usersApiSlice;
+export const {
+  useLoginMutation,
+  useGetProfileQuery,
+  useRegisterMutation,
+  useUpdateProfileMutation,
+  useResendVerificationEmailMutation,
+  useActivateEmailQuery 
+} = usersApiSlice;

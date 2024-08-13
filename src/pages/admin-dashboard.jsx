@@ -5,9 +5,10 @@ import Head from "next/head";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import ShoppingBagIcon from "@mui/icons-material/ShoppingBag";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
-import FontDownloadIcon from '@mui/icons-material/FontDownload';
+import FontDownloadIcon from "@mui/icons-material/FontDownload";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import Link from "next/link";
-import PublicIcon from '@mui/icons-material/Public';
+import PublicIcon from "@mui/icons-material/Public";
 import { Typography } from "@mui/material";
 import { useGetAdminALLFontsCountQuery } from "@/slices/fontApiSlice";
 import { useCountCountriesQuery } from "@/slices/countriesApiSlice";
@@ -15,54 +16,108 @@ import { useCountCodesQuery } from "@/slices/validationCodeApiSlice";
 import { useCountUsersQuery } from "@/slices/adminUsersApiSlice";
 import { WithAuth } from "@/components/withAuth";
 import { useCountVendorsQuery } from "@/slices/vendorsApliSlices";
-
+import { useAdminNewReportProblemQuery } from "@/slices/reportProblemApiSlice";
 
 const AdminDashboard = () => {
-  // const []
-  const { data: totalFonts, isLoading: isTotalFontsLoading, error: totalFontsError } = useGetAdminALLFontsCountQuery()
-  const { data: totalCountries, isLoading: isTotalCountriesLoading, error: totalCountriesError } = useCountCountriesQuery();
-  const { data: totalCodes, isLoading: isTotalCodesLoading, error: totalCodesError } = useCountCodesQuery();
-  const { data: totalVendors, isLoading: isTotalVendorsLoading, error: totalVendorsError } = useCountVendorsQuery();
-  const { data: totalUsers, isLoading: isTotalUsersLoading, error: totalUsersError } = useCountUsersQuery();
+  const {
+    data: totalFonts,
+    isLoading: isTotalFontsLoading,
+    error: totalFontsError,
+  } = useGetAdminALLFontsCountQuery();
+  const {
+    data: totalCountries,
+    isLoading: isTotalCountriesLoading,
+    error: totalCountriesError,
+  } = useCountCountriesQuery();
+  const {
+    data: totalCodes,
+    isLoading: isTotalCodesLoading,
+    error: totalCodesError,
+  } = useCountCodesQuery();
+  const {
+    data: totalVendors,
+    isLoading: isTotalVendorsLoading,
+    error: totalVendorsError,
+  } = useCountVendorsQuery();
+  const {
+    data: totalUsers,
+    isLoading: isTotalUsersLoading,
+    error: totalUsersError,
+  } = useCountUsersQuery({page: 1,  limit:12});
+
+  const {
+    data: totalReportsData,
+    isLoading: isTotalReportsDataLoading,
+    error: TotalReportsDataError,
+  } = useAdminNewReportProblemQuery({ page: 1 });
+
 
   useEffect(() => {
     if (totalUsers) {
-      console.log(totalUsers)
     } else {
-      console.log(totalUsersError)
     }
-  }, [totalUsers, totalUsersError])
+  }, [totalUsers, totalUsersError]);
 
   const cards = [
     {
       id: 1,
       title: "Users",
-      count: isTotalUsersLoading ? "Loading" : totalUsersError ? totalUsersError?.data?.message : totalUsers?.totalCount || 0,
+      count: isTotalUsersLoading
+        ? "Loading"
+        : totalUsersError
+        ? totalUsersError?.data?.message
+        : totalUsers?.totalCount || 0,
       icon: <PeopleOutlineIcon fontSize="large" />,
     },
     {
       id: 2,
       title: "Vendor",
-      count: isTotalVendorsLoading ? "Loading..." : totalVendorsError ? totalVendorsError?.data?.message : totalVendors.totalCount || 0,
+      count: isTotalVendorsLoading
+        ? "Loading..."
+        : totalVendorsError
+        ? totalVendorsError?.data?.message
+        : totalVendors.totalCount || 0,
       icon: <ShoppingBagIcon fontSize="large" />,
     },
     {
       id: 3,
       title: "Validation Codes",
-      count: isTotalCodesLoading ? "Loading..." : totalCodesError ? totalCodesError?.data?.message : totalCodes?.totalValidationCodes || 0,
+      count: isTotalCodesLoading
+        ? "Loading..."
+        : totalCodesError
+        ? totalCodesError?.data?.message
+        : totalCodes?.totalValidationCodes || 0,
       icon: <VerifiedUserIcon fontSize="large" />,
     },
     {
       id: 4,
       title: "Countries",
-      count: isTotalCountriesLoading ? 'Loading...' : totalCountriesError ? totalCountriesError?.data?.message : totalCountries?.totalCountries || 0,
+      count: isTotalCountriesLoading
+        ? "Loading..."
+        : totalCountriesError
+        ? totalCountriesError?.data?.message
+        : totalCountries?.totalCountries || 0,
       icon: <PublicIcon fontSize="large" />,
     },
     {
       id: 5,
       title: "Fonts",
-      count: isTotalFontsLoading ? "Loading..." : totalFontsError ? totalFontsError?.data?.message : totalFonts?.totalFonts || 0,
+      count: isTotalFontsLoading
+        ? "Loading..."
+        : totalFontsError
+        ? totalFontsError?.data?.message
+        : totalFonts?.totalFonts || 0,
       icon: <FontDownloadIcon fontSize="large" />,
+    },
+    {
+      id: 6,
+      title: "Report Problem",
+      count: isTotalReportsDataLoading
+        ? "Loading..."
+        : TotalReportsDataError
+        ? TotalReportsDataError?.data?.message
+        : totalReportsData?.count || 0,
+      icon: <ReportProblemIcon fontSize="large" />,
     },
   ];
   return (
@@ -93,17 +148,19 @@ const AdminDashboard = () => {
                     specs.title === "Users"
                       ? "/users"
                       : specs.title === "Vendor"
-                        ? "/vendors"
-                        : specs.title === "Validation Codes"
-                          ? "/validation-codes"
-                          : specs.title === "Countries"
-                            ? "/admin-countries"
-                            : specs.title === "Fonts"
-                              ? "/admin-fonts"
-                              : ""
+                      ? "/vendors"
+                      : specs.title === "Validation Codes"
+                      ? "/validation-codes"
+                      : specs.title === "Countries"
+                      ? "/admin-countries"
+                      : specs.title === "Fonts"
+                      ? "/admin-fonts"
+                      : specs.title === "Report Problem"
+                      ? "/admin-report-problems"
+                      : ""
                   }
                 >
-                  <div className="bg-white shadow-md rounded-lg p-4 flex items-center space-x-4 hover:shadow-lg transition-shadow">
+                  <div className="bg-white shadow-md rounded-lg p-4 flex items-start space-x-4 hover:shadow-lg transition-shadow">
                     <div className="flex-shrink-0">{specs.icon}</div>
                     <div>
                       <Typography variant="h6" className="text-gray-900" noWrap>
@@ -125,4 +182,4 @@ const AdminDashboard = () => {
   );
 };
 // export default AdminDashboard;
-export default WithAuth(AdminDashboard, ['ADMIN']);
+export default WithAuth(AdminDashboard, ["ADMIN"]);

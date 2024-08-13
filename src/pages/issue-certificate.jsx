@@ -11,24 +11,28 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import image from "../assets/images/image.png";
 import { WithAuth } from "@/components/withAuth";
+import { useReportProblemMutation } from "@/slices/reportProblemApiSlice";
 
 function IssueMore() {
   const router = useRouter();
   const [issueState, setIssueState] = useState("issueMore");
   const [reIssueCertificateNo, setReIssueCertificateNo] = useState(0);
   const [acknowledge, setAcknowledge] = useState(false);
+  const [reportText, setReportText] = useState(""); // State for report problem
 
-  const { id: certificateInfoId, saved_draft: certificateSavedDraft } =
-    router.query;
+  const { id: certificateInfoId, saved_draft: certificateSavedDraft } = router.query;
 
-  // Fetch certificate information only if certificateInfoId is available
+
   const [
     reIssueCertificate,
-    {
-      isLoading: isLoadingReIssueCertificates,
-      error: isErrorinReissueCertificate,
-    },
+    { isLoading: isLoadingReIssueCertificates, error: isErrorinReissueCertificate },
   ] = useReIssueCertificatesMutation();
+
+  const [
+    reportProblem,
+    { isLoading: isLoadingreportProblem, error: isErrorreportProblem },
+  ] = useReportProblemMutation();
+
   const {
     data: certificateInfo,
     isLoading: isCertificateInfoLoading,
@@ -50,16 +54,14 @@ function IssueMore() {
         if (res.error.status === 404) {
           toast.error(res?.error?.data?.message);
         } else {
-          toast.error(
-            "An error occurred: " + (res.error.message || "Unknown error")
-          );
+          toast.error("An error occurred: " + (res.error.message || "Unknown error"));
         }
       } else {
         toast.success(res?.data?.message);
         refetch();
       }
     } catch (err) {
-      console.error("Caught Error:", err);
+      
 
       if (err?.response?.data) {
         toast.error(err.response.data.message || "An unknown error occurred");
@@ -70,20 +72,51 @@ function IssueMore() {
       }
     }
   };
-  const lastIssuedDate = new Date(
-    certificateInfo?.data[0]?.issued_date
-  ).toLocaleString();
+
+  const reportProblemHandler = async () => {
+    try {
+      // Ensure that certificateInfoId is defined and valid
+      if (!certificateInfoId) {
+        throw new Error("Certificate ID is not defined");
+      }
+  
+      const res = await reportProblem({ id: certificateInfoId, reporting_text: reportText });
+  
+      if (res?.error) {
+        // Check if there's a specific error message or fallback to a generic one
+        toast.error("An error occurred: " + (res.error.message || "Unknown error"));
+        
+      } else {
+        toast.success("Your problem report has been submitted.");
+        setReportText(""); // Clear the text field
+        setIssueState("issueMore"); // Optionally, revert to the initial state
+      }
+    } catch (err) {
+  
+      // Enhanced error handling
+      if (err?.response?.data) {
+        toast.error(err.response.data.message || "An unknown error occurred");
+      } else if (err?.message) {
+        toast.error(err.message);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+    }
+  };
+  
+  const lastIssuedDate = new Date(certificateInfo?.data[0]?.issued_date).toLocaleString();
 
   const handleCancel = () => {
     setReIssueCertificateNo(0);
     setAcknowledge(false);
+    setReportText(""); // Clear the report text field
   };
 
   return (
     <>
       <Header />
       <Box className="min-h-screen">
-        <Box className="flex items-center justify-center flex-col sm:flex-row gap-[1vw] ">
+        <Box className="flex items-center justify-center flex-col sm:flex-row gap-[1vw]">
           <Box>
             <Image
               src={certificateInfo?.data[0]?.product_image?.url || image}
@@ -101,10 +134,7 @@ function IssueMore() {
               {lastIssuedDate || "example Date"}
             </Typography>
             <Typography className="font-koho text-[#080808] font-light text-[20px]">
-              <span className="text-slate-500">
-                number of certificates issued
-              </span>{" "}
-              {certificateInfo?.data[0]?.issued || 0}
+              <span className="text-slate-500">number of certificates issued</span> {certificateInfo?.data[0]?.issued || 0}
             </Typography>
           </Box>
 
@@ -112,45 +142,37 @@ function IssueMore() {
             <Button
               type="submit"
               variant="contained"
-              className={`rounded-[7px] font-kodchasan  float-end py-0 ${
+              className={`rounded-[7px] font-kodchasan float-end py-0 ${
                 issueState === "issueMore" ? "bg-[#C2C3CE]" : "bg-[#22477F]"
               }`}
-              onClick={() => {
-                setIssueState("issueMore");
-              }}
+              onClick={() => setIssueState("issueMore")}
             >
               Issue More
             </Button>
             <Button
               type="submit"
               variant="contained"
-              className={`rounded-[7px] font-kodchasan  float-end py-0 ${
-                issueState === "reissueExisting"
-                  ? "bg-[#C2C3CE]"
-                  : "bg-[#22477F]"
+              className={`rounded-[7px] font-kodchasan float-end py-0 ${
+                issueState === "reissueExisting" ? "bg-[#C2C3CE]" : "bg-[#22477F]"
               }`}
-              onClick={() => {
-                setIssueState("reissueExisting");
-              }}
+              onClick={() => setIssueState("reissueExisting")}
             >
               Reissue existing
             </Button>
             <Button
-              type="submit"
+              type="button"
               variant="contained"
-              className={`rounded-[7px] font-kodchasan  float-end py-0 ${
+              className={`rounded-[7px] font-kodchasan py-0 ${
                 issueState === "reportIssue" ? "bg-[#C2C3CE]" : "bg-[#22477F]"
               }`}
-              onClick={() => {
-                setIssueState("reportIssue");
-              }}
+              onClick={() => setIssueState("reportIssue")}
             >
-              Report issue
+              Report Problem
             </Button>
           </Box>
         </Box>
         {issueState === "issueMore" ? (
-          <Box className="max-w-[602px] w-full mx-auto  bg-[#22477F] py-6 my-6 rounded-[30px]">
+          <Box className="max-w-[602px] w-full mx-auto bg-[#22477F] py-6 my-6 rounded-[30px]">
             <Box className="flex items-center justify-center flex-col mx-20 my-4">
               <Typography className="font-koho text-[#fff] font-light text-[20px]">
                 How many more would you like to issue?
@@ -159,18 +181,14 @@ function IssueMore() {
               <Box>
                 <input
                   type="number"
-                  name=""
-                  id=""
-                  placeholder="Enter text here"
+                  placeholder="Enter number here"
                   className="w-full min-h-[40px] px-2 py-1 rounded-sm text-base md:text-xl bg-white border-none outline-2 outline-[#606060] my-6"
                   value={reIssueCertificateNo}
                   onChange={(e) => setReIssueCertificateNo(e.target.value)}
                 />
               </Box>
               <Typography color={"white"}>
-                The issues you are ordering right now will have all the same
-                exact information as the previously ordered certificates for
-                “Certificate Name”
+                The issues you are ordering right now will have all the same exact information as the previously ordered certificates for “Certificate Name”
               </Typography>
 
               <Box className="flex items-center">
@@ -209,7 +227,7 @@ function IssueMore() {
             </Box>
           </Box>
         ) : issueState === "reissueExisting" ? (
-          <Box className="max-w-[602px] w-full mx-auto  bg-[#22477F] py-6 my-6 rounded-[30px]">
+          <Box className="max-w-[602px] w-full mx-auto bg-[#22477F] py-6 my-6 rounded-[30px]">
             <Box className="mx-10 my-4">
               <Typography className="font-koho text-[#fff] font-light text-[20px]">
                 Certificate number to be reissued:
@@ -219,7 +237,7 @@ function IssueMore() {
                 <TextField
                   variant="outlined"
                   fullWidth
-                  placeholder="Enter text here"
+                  placeholder="Enter certificate number here"
                   className="my-6"
                   sx={{
                     backgroundColor: "#fff",
@@ -279,11 +297,54 @@ function IssueMore() {
               </Button>
             </Box>
           </Box>
-        ) : (
-          <Box className="max-w-[602px] w-full mx-auto  bg-[#22477F] py-6 my-6 rounded-[30px]">
-            {/* Your other states or content here */}
+        ) : issueState === "reportIssue" ? (
+          <Box className="max-w-[602px] w-full mx-auto bg-[#22477F] py-6 my-6 rounded-[30px]">
+            <Box className="mx-10 my-4">
+              <Typography className="font-koho text-[#fff] font-light text-[20px]">
+                Report your problem:
+              </Typography>
+
+              <Box>
+                <TextField
+                  multiline
+                  rows={10}
+                  variant="outlined"
+                  fullWidth
+                  name="description"
+                  placeholder="Enter your problem description here"
+                  sx={{
+                    backgroundColor: "#fff",
+                    maxWidth: "508px",
+                    width: "100%",
+                    borderRadius: "10px",
+                  }}
+                  className="mt-4 lg:mt-0 md:mt-0"
+                  value={reportText}
+                  onChange={(e) => setReportText(e.target.value)}
+                />
+              </Box>
+            </Box>
+            <Box className="flex justify-center items-center flex-col">
+              <Button
+                variant="contained"
+                className="bg-[#27A213] rounded-[7px] font-kodchasan w-[189px]"
+                sx={{ fontFamily: "Kodchasan, sans-serif" }}
+                onClick={reportProblemHandler}
+                disabled={isLoadingreportProblem}
+              >
+                Submit
+              </Button>
+              <Button
+                onClick={handleCancel}
+                variant="contained"
+                className="bg-[#A21313] rounded-[7px] font-kodchasan mt-5 w-[189px]"
+                sx={{ fontFamily: "Kodchasan, sans-serif" }}
+              >
+                Cancel
+              </Button>
+            </Box>
           </Box>
-        )}
+        ) : null}
       </Box>
       <Footer />
     </>

@@ -40,7 +40,7 @@ function Index() {
   const { data: currentUser, isLoading: isCurrentUserLoading, error: isCurrentUserError, refetch: currentUserRefetch } = useGetProfileQuery();
   const { data: allFont, isLoading: isAllfontLoading, error: isAllfontrError, refetch: AllfontRefetch } = useGetAllFontsQuery();
 
-  console.log("All Fonts", allFont)
+
 
   const router = useRouter();
   const uploadProductImageRef = useRef(null);
@@ -130,7 +130,6 @@ function Index() {
           toast.error("Product image not provided.");
         }
       } catch (error) {
-        console.error("Error during submission:", error);
         toast.error("Failed to create certificate. Please try again.");
       }
     }

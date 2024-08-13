@@ -1,19 +1,21 @@
 import { apiSlice } from "./apiSlice";
 import { getTokenFromLocalStorage } from "@/utils/get-token";
-import { ADMIN_USERS_URL } from "@/utils/constants";
 
+// Define your adminUserApiSlice with the endpoint
 export const adminUserApiSlice = apiSlice.injectEndpoints({
-    endpoints: (builder) => ({
-        countUsers: builder.query({
-            query: () => ({
-                url: ADMIN_USERS_URL,
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${getTokenFromLocalStorage()}`
-                }
-            })
-        }),
+  endpoints: (builder) => ({
+    countUsers: builder.query({
+      query: ({ page = 1, limit = 12, name = "" }) => ({
+        url: `admin/all-users?page=${page}&limit=${limit}&name=${name}`,
+        method: "GET",
+        params: { page, limit, name },
+        headers: {
+          Authorization: `Bearer ${getTokenFromLocalStorage()}`,
+        },
+      }),
     }),
+  }),
 });
 
+// Export hooks for usage in functional components
 export const { useCountUsersQuery } = adminUserApiSlice;

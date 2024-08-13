@@ -169,7 +169,6 @@ function ProPlanVendor() {
           toast.error("Product image not provided.");
         }
       } catch (error) {
-        console.error("Error during submission:", error);
         toast.error("Failed to create certificate. Please try again.");
       }
     }

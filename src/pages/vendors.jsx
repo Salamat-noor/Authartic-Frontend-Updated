@@ -105,7 +105,6 @@ export default function UsersTable() {
 
   useEffect(() => {
     if (allVendors) {
-      console.log(allVendors);
       if (allVendorsError) {
         setVendorColumns([
           {
