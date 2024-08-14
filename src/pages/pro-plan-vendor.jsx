@@ -630,6 +630,6 @@ function ProPlanVendor() {
   );
 }
 
-// export default ProPlanVendor;
+
 export default WithAuth(ProPlanVendor, ['VENDOR']);
 

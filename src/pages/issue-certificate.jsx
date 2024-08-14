@@ -351,5 +351,5 @@ function IssueMore() {
   );
 }
 
-// export default IssueMore;
+
 export default WithAuth(IssueMore, ["VENDOR"]);

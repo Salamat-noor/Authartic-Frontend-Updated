@@ -17,7 +17,6 @@ import Footer from "@/components/footer";
 import { WithAuth } from "@/components/withAuth";
 
 const AccountSettings = () => {
-  // Define initial form data
   const initialFormData = {
     primary_content: "",
     phone: "",
@@ -32,10 +31,10 @@ const AccountSettings = () => {
   };
   const [subscriptionStatusName, setSubscriptionStatusName] = useState("None");
 
-  // State to track which field is being edited
+
   const [editingField, setEditingField] = useState(null);
 
-  // CUSTOM QUERY HOOKS
+ 
   const { data: activeCountries } = useGetActiveCountriesQuery();
   const { data: userProfile, refetch: userProfileRefetch } =
     useGetProfileQuery();
@@ -43,13 +42,13 @@ const AccountSettings = () => {
     useUpdateProfileMutation();
   const [uploadAttachment] = useUploadAttachmentMutation();
 
-  // REF HOOKS
+
   const uploadPicRef = useRef(null);
 
-  // STATE HOOKS
+ 
   const [formData, setFormData] = useState(initialFormData);
 
-  // HANDLERS
+
   const handleFileChange = useCallback((e) => {
     const file = e.target.files[0];
     if (file) {
@@ -104,7 +103,7 @@ const AccountSettings = () => {
       const responseUpdated = await updateUser(dataToSubmit).unwrap();
       toast.success("User Updated.");
    
-      // Router.push('account-settings');
+    
     } catch (error) {
       toast.error("Error in Submit");
     }
@@ -124,7 +123,7 @@ const AccountSettings = () => {
         social_media: userProfile.social_media || ["", "", ""],
         website_url: userProfile.website_url || "",
       });
-      setEditingField(null); // Reset editing field
+      setEditingField(null); 
     }
   };
 
@@ -464,5 +463,4 @@ const AccountSettings = () => {
   );
 };
 
-// export default AccountSettings;
 export default WithAuth(AccountSettings, ["VENDOR"]);

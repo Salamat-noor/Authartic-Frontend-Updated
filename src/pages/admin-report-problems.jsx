@@ -26,13 +26,9 @@ import {
   useAdminResponseReportMutation,
 } from "@/slices/reportProblemApiSlice";
 
-const PAGE_SIZE = 10; // Number of rows per page
-
 export default function PaginatedTable() {
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [searchQuery, setSearchQuery] = useState("");
-  const [totalCount, setTotalCount] = useState(0);
+  const [rows, setRows] = useState([]);
   const [selectedReport, setSelectedReport] = useState(null);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [reportData, setReportData] = useState({
@@ -40,7 +36,6 @@ export default function PaginatedTable() {
     status: "",
     id: "",
   });
-  const [rows, setRows] = useState([]);
 
   // Debounced search query
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -52,8 +47,7 @@ export default function PaginatedTable() {
     error: reportsError,
     refetch: reportsDataRefetch,
   } = useAdminNewReportProblemQuery({
-    page,
-    limit: pageSize,
+    limit: 1000, // Fetch a large number of rows to avoid pagination
     status: "active", // Always fetch only active reports
     id: debouncedSearchQuery,
   });
@@ -75,19 +69,13 @@ export default function PaginatedTable() {
       }));
 
       setRows(formattedRows);
-      setTotalCount(reportsData.totalCount || 0); // Ensure totalCount is set properly
     }
   }, [reportsData]);
 
-  // Effect to reset page on search query change
-  useEffect(() => {
-    setPage(1); // Reset page to 1 on search query change
-  }, [searchQuery]);
-
-  // Fetch reports data on search query, pagination, or page size change
+  // Effect to fetch reports data on search query change
   useEffect(() => {
     reportsDataRefetch();
-  }, [page, pageSize, debouncedSearchQuery]);
+  }, [debouncedSearchQuery]);
 
   // Handle Edit Click
   const handleEdit = (row) => {
@@ -113,6 +101,7 @@ export default function PaginatedTable() {
         handleModalClose();
       }
     } catch (error) {
+      // Handle error
     }
   };
 
@@ -184,9 +173,9 @@ export default function PaginatedTable() {
   ];
 
   return (
-    <div className="w-screen min-h-screen flex flex-col justify-between">
-      <Box sx={{ width: "100%", height: "auto" }}>
-        <Header />
+    <div className="w-screen min-h-screen flex flex-col">
+      <Header />
+      <Box sx={{ width: "100%", height: "auto", flexGrow: 1 }}>
         <div className="w-full md:w-[90%] lg:w-[70%] mx-auto mt-3">
           <Box sx={{ mb: "2rem" }}>
             <Link
@@ -228,7 +217,7 @@ export default function PaginatedTable() {
             />
           </Box>
 
-          <Box sx={{ width: "100%", height: "450px", overflow: "hidden" }}>
+          <Box sx={{ width: "100%", height: "450px", overflow: "auto" }}>
             {isReportsLoading && (
               <Typography variant="h5" color={"primary"}>
                 Loading...
@@ -245,19 +234,10 @@ export default function PaginatedTable() {
               disableColumnMenu
               rows={rows}
               columns={columns}
-              pageSize={pageSize}
-              rowsPerPageOptions={[PAGE_SIZE]}
-              pagination
-              paginationMode="server"
-              rowCount={totalCount}
-              paginationModel={{
-                page: page - 1,
-                pageSize,
-              }}
-              onPaginationModelChange={({ page, pageSize }) => {
-                setPage(page + 1); // page is zero-based, hence page + 1
-                setPageSize(pageSize);
-              }}
+              pageSize={rows.length} // Set pageSize to number of rows to display all data
+              rowsPerPageOptions={[]} // Disable options to change page size
+              pagination={false} // Disable pagination
+              paginationMode="client" // Switch to client-side pagination (although pagination is disabled)
             />
           </Box>
         </div>

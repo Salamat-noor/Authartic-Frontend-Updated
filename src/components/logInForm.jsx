@@ -9,11 +9,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLoginMutation } from "@/slices/userApiSlice";
 import { setCredentials } from "@/slices/authSlice";
 import { toast } from "react-toastify";
-import { useRouter } from "next/router"; // Import useRouter from next/router
+import { useRouter } from "next/router";
 
 
 const LoginForm = ({ title, from }) => {
-  const router = useRouter(); // Initialize useRouter hook
+  const router = useRouter(); 
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +21,7 @@ const LoginForm = ({ title, from }) => {
   const [login] = useLoginMutation();
   const { userInfo } = useSelector((state) => state.auth);
 
-  // Effect hook to handle redirect on login success
+
   React.useEffect(() => {
     if (userInfo) {
       if (userInfo.role === "ADMIN") {
@@ -55,22 +55,22 @@ const LoginForm = ({ title, from }) => {
       if (res.user) {
         if (res.user.role !== selectedRole) {
           toast.error("Access denied. Invalid role.");
-          return; // Stop further processing
+          return; 
         }
         toast.success("Login successful!");
         dispatch(setCredentials({ ...res }));
-        // Set the redirection based on role
+
         if (res.user.role === "ADMIN") {
           router.push("/admin-dashboard");
         } else if (res.user.role === "VENDOR") {
-          const hasPlan = res.user.subscriptionStatus; // Replace with actual logic
+          const hasPlan = res.user.subscriptionStatus; 
           if (hasPlan) {
             router.push("/home-after-login");
           } else {
             router.push("/package-plans");
           }
         }
-        // Clear the input fields and role selection after successful login
+  
         setEmail("");
         setPassword("");
       }

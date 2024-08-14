@@ -23,10 +23,9 @@ const ITEM_HEIGHT = 48;
 const PAGE_SIZE = 10; // Number of rows per page
 
 export default function PaginatedTable() {
-    const [isActive, setIsActive] = useState(true);
+    const [isActiveFont, setIsActiveFont] = useState(true);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(PAGE_SIZE);
-    const [isActiveFont, setIsActiveFont] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [totalCount, setTotalCount] = useState(0);
     const [selectedFont, setSelectedFont] = useState(null);
@@ -35,10 +34,8 @@ export default function PaginatedTable() {
     const [fontData, setFontData] = useState({ name: '', family: '' });
     const [rows, setRows] = useState([]);
 
-    // Debounced search query
     const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-    // Fetch the data based on the debounced search query and filter
     const { data: allFontsData, isLoading: isAllFontsLoading, error: allFontsError, refetch: allFontDataRefetch } = useGetAdminAllFontsQuery({
         page,
         limit: pageSize,
@@ -50,7 +47,6 @@ export default function PaginatedTable() {
     const [updateFont, { isLoading: isUpdateFontLoading, error: updateFontError }] = useUpdateAdminFontMutation();
     const [deleteFont, { isLoading: isDeleteFontLoading, error: deleteFontError }] = useDeleteAdminFontMutation();
 
-    // Fetch total count of fonts for pagination
     const { data: allFontsCountData } = useGetAdminALLFontsCountQuery();
 
     useEffect(() => {
@@ -60,19 +56,16 @@ export default function PaginatedTable() {
     }, [allFontsCountData]);
 
     useEffect(() => {
-        // Reset the page when search query changes
         setPage(1);
     }, [searchQuery, isActiveFont]);
 
     useEffect(() => {
         if (allFontsData?.data) {
-            // Create a new array to avoid mutating the original data
             const sortedRows = [...allFontsData.data].sort((a, b) => a.id - b.id);
             setRows(sortedRows);
         }
-    }, [allFontsData, setIsActiveFont],);
+    }, [allFontsData]);
 
-    // Handle three dots menu
     const [openClose3DotsMenu, setOpenClose3DotsMenu] = useState(null);
     const open = Boolean(openClose3DotsMenu);
 
@@ -84,36 +77,29 @@ export default function PaginatedTable() {
         setOpenClose3DotsMenu(null);
         if (option.isActive !== undefined) {
             setIsActiveFont(option.isActive);
-            setPage(1); // Reset page to 1 when filter changes
+            setPage(1);
         }
         if (option.isCreate) {
-            setOpenCreateModal(true); // Open the create font modal
+            setOpenCreateModal(true);
         }
     };
 
-    // Search Input Handler
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
     };
 
-    useEffect(() => {
-        const setActiveOrNot = isActive ? 1 : 2;
-    }, [isActive])
-
-    // Handle Edit Click
     const handleEdit = (row) => {
-        const setActiveOrNot = isActive ? 1 : 2;
         setSelectedFont(row);
-        setFontData({ name: row.name, family: row.family, status: setActiveOrNot });
+        setFontData({ name: row.name, family: row.family });
         setOpenEditModal(true);
     };
 
-    // Handle Delete Click
     const handleDelete = async (id) => {
         try {
             await deleteFont(id).unwrap();
             allFontDataRefetch();
         } catch (error) {
+            // Handle error
         }
     };
 
@@ -125,13 +111,11 @@ export default function PaginatedTable() {
     const handleSave = async () => {
         try {
             if (selectedFont) {
-                // Update existing font
                 const updatedFont = await updateFont({
                     id: selectedFont.id,
                     bodyData: fontData
                 }).unwrap();
 
-                // Update and sort the rows
                 setRows(prevRows =>
                     [...prevRows.map(row => row.id === updatedFont.id ? updatedFont : row)].sort((a, b) => a.id - b.id)
                 );
@@ -139,13 +123,12 @@ export default function PaginatedTable() {
                 allFontDataRefetch();
                 handleModalClose();
             } else {
-                // Create new font
                 await createFont(fontData).unwrap();
-                // Refetch to get the updated list
                 allFontDataRefetch();
                 handleModalClose();
             }
         } catch (error) {
+            // Handle error
         }
     };
 
@@ -183,21 +166,21 @@ export default function PaginatedTable() {
     ];
 
     return (
-        <div className='w-screen min-h-screen flex flex-col justify-between'>
-            <Box sx={{ width: "100%", height: "auto" }}>
-                <Header />
-                <div className='w-full md:w-[90%] lg:w-[70%] mx-auto mt-3'>
-                    <Box sx={{ mb: "2rem" }}>
-                        <Link href={'/admin-dashboard'} className='flex items-center justify-start gap-1'>
+        <div className='flex flex-col min-h-screen'>
+            <Header />
+            <main className='flex-grow'>
+                <Box sx={{ maxWidth: '1440px', width: '100%', mx: 'auto', p: 2 }}>
+                    <Box sx={{ mb: 3 }}>
+                        <Link href={'/admin-dashboard'} className='flex items-center gap-1'>
                             <ArrowBack color='primary' />
-                            <Typography variant='h6' color={'primary'} className='text-sm sm:text-base md:text-lg'>
+                            <Typography variant='h6' color={'primary'}>
                                 Admin Dashboard
                             </Typography>
                         </Link>
                     </Box>
 
-                    <Box sx={{ width: "100%", height: "auto", display: "flex", alignItems: 'center', justifyContent: "space-between" }}>
-                        <Typography variant='h5' color={'primary'} marginBottom={1}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                        <Typography variant='h5' color={'primary'}>
                             {isActiveFont ? 'Active Fonts' : 'Inactive Fonts'}
                         </Typography>
                         <div>
@@ -235,7 +218,7 @@ export default function PaginatedTable() {
                         </div>
                     </Box>
 
-                    <Box sx={{ width: '100%', height: "auto", mb: "1rem" }}>
+                    <Box sx={{ mb: 2 }}>
                         <TextField
                             fullWidth
                             variant="outlined"
@@ -245,7 +228,7 @@ export default function PaginatedTable() {
                         />
                     </Box>
 
-                    <Box sx={{ width: '100%', height: "450px", overflow: 'hidden' }}>
+                    <Box sx={{ height: '450px', overflow: 'auto' }}>
                         {isAllFontsLoading && <Typography variant='h5' color={"primary"}>Loading...</Typography>}
                         {allFontsError && <Typography variant="h5" color={"error"}>{allFontsError?.data?.message || 'Error loading fonts'}</Typography>}
 
@@ -269,8 +252,8 @@ export default function PaginatedTable() {
                             }}
                         />
                     </Box>
-                </div>
-            </Box>
+                </Box>
+            </main>
             <Footer />
 
             {/* Edit Font Modal */}
@@ -295,10 +278,6 @@ export default function PaginatedTable() {
                         value={fontData.family}
                         onChange={(e) => setFontData({ ...fontData, family: e.target.value })}
                     />
-                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "start", gap: "1rem" }}>
-                        <input type="checkbox" name="activeOrNot" id="activeOrNot" checked={isActive} onChange={e => setIsActive(e.target.checked)} />
-                        <label htmlFor="activeOrNot">{isActive ? "Deactivate Font" : "Activate Font"} </label>
-                    </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleModalClose} color="primary">

@@ -14,7 +14,7 @@ import { toast } from 'react-toastify';
 const options = [
     { name: 'Active Countries', isActive: true },
     { name: 'Inactive Countries', isActive: false },
-    { name: 'Create Countries' } // Add Create Countries option 
+    { name: 'Create Countries' } 
 ];
 
 const ITEM_HEIGHT = 48;
@@ -39,7 +39,7 @@ export default function PaginatedTable() {
 
     // Modal states
     const [openModal, setOpenModal] = useState(false);
-    const [openCreateModal, setOpenCreateModal] = useState(false); // New state for Create Modal
+    const [openCreateModal, setOpenCreateModal] = useState(false);
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
@@ -47,7 +47,7 @@ export default function PaginatedTable() {
         is_deleted: false,
         status: 1
     });
-    const [createFormData, setCreateFormData] = useState({ // New state for Create form
+    const [createFormData, setCreateFormData] = useState({
         name: '',
         code: ''
     });
@@ -67,7 +67,7 @@ export default function PaginatedTable() {
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
-        setPage(1); // Reset to first page when search term changes
+        setPage(1); 
     };
 
     const handleUpdate = (country) => {
@@ -92,7 +92,7 @@ export default function PaginatedTable() {
     };
 
     const handleCreateCountry = () => {
-        setOpenCreateModal(true); // Open create modal
+        setOpenCreateModal(true);
     };
 
     const handleFormChange = (e) => {
@@ -103,7 +103,7 @@ export default function PaginatedTable() {
         });
     };
 
-    const handleCreateFormChange = (e) => { // New function to handle create form input changes
+    const handleCreateFormChange = (e) => {
         const { name, value } = e.target;
         setCreateFormData({
             ...createFormData,
@@ -131,13 +131,13 @@ export default function PaginatedTable() {
         }
     };
 
-    const handleCreateSubmit = () => { // New function to handle create form submission
+    const handleCreateSubmit = () => {
         toast.info('Creating country...');
         createCountry(createFormData)
             .then(() => {
                 refetch();
                 setOpenCreateModal(false);
-                setCreateFormData({ name: '', code: '' }); // Reset form data
+                setCreateFormData({ name: '', code: '' });
                 toast.success('Country created successfully!');
             })
             .catch(() => {
@@ -199,19 +199,18 @@ export default function PaginatedTable() {
             ]);
             setTableRows([{ id: 1, status: error.status, message: error.data.message }]);
             setDataLength(0);
-            // toast.error(`Error: ${error.data.message}`);
         }
     }, [data, error]);
 
     useEffect(() => {
-        refetch(); // Fetch data when page or filter changes
+        refetch();
     }, [page, isActiveCountry, searchTerm, refetch]);
 
     return (
         <div className='w-screen min-h-screen flex flex-col justify-between bg-gray-100'>
             <Box sx={{ width: "100%", height: "auto" }}>
                 <Header />
-                <div className='w-full md:w-[90%] lg:w-[70%] mx-auto mt-3'>
+                <div className='w-full md:w-[90%] lg:w-[80%] mx-auto mt-3'>
                     <Box sx={{ mb: "2rem" }}>
                         <Link href={'/admin-dashboard'} className='flex items-center justify-start gap-1'>
                             <ArrowBack color='primary' />
@@ -221,80 +220,81 @@ export default function PaginatedTable() {
                         </Link>
                     </Box>
 
-                    <Box sx={{ width: "100%", height: "auto", display: "flex", alignItems: 'center', justifyContent: "space-between" }}>
-                        <Typography variant='h5' color={'primary'} marginBottom={1}>
-                            {isActiveCountry ? 'Active Countries' : 'Inactive Countries'}
-                        </Typography>
-                        <div>
-                            <IconButton
-                                aria-label="more"
-                                id="long-button"
-                                aria-controls={open ? 'long-menu' : undefined}
-                                aria-expanded={open ? 'true' : undefined}
-                                aria-haspopup="true"
-                                onClick={handleThreeDotsClick}
-                            >
-                                <MoreVertIcon />
-                            </IconButton>
-                            <Menu
-                                id="long-menu"
-                                MenuListProps={{
-                                    'aria-labelledby': 'long-button',
+                    <Box sx={{ width: "100%", height: "auto", display: "flex", flexDirection: 'column', gap: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Typography variant='h5' color={'primary'} marginBottom={1}>
+                                {isActiveCountry ? 'Active Countries' : 'Inactive Countries'}
+                            </Typography>
+                            <div>
+                                <IconButton
+                                    aria-label="more"
+                                    id="long-button"
+                                    aria-controls={open ? 'long-menu' : undefined}
+                                    aria-expanded={open ? 'true' : undefined}
+                                    aria-haspopup="true"
+                                    onClick={handleThreeDotsClick}
+                                >
+                                    <MoreVertIcon />
+                                </IconButton>
+                                <Menu
+                                    id="long-menu"
+                                    MenuListProps={{
+                                        'aria-labelledby': 'long-button',
+                                    }}
+                                    anchorEl={openClose3DotsMenu}
+                                    open={Boolean(openClose3DotsMenu)}
+                                    onClose={() => setOpenClose3DotsMenu(null)}
+                                    PaperProps={{
+                                        style: {
+                                            maxHeight: ITEM_HEIGHT * 4.5,
+                                            width: '20ch',
+                                        },
+                                    }}
+                                >
+                                    {options.map((option, index) => (
+                                        <MenuItem key={index} selected={option.isActive === isActiveCountry} onClick={() => {
+                                            if (option.name === 'Create Countries') {
+                                                handleCreateCountry();
+                                            } else {
+                                                handleClose(option.isActive);
+                                            }
+                                        }}>
+                                            {option.name}
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
+                            </div>
+                        </Box>
+
+                        <Box sx={{ width: '100%', mb: 2 }}>
+                            <TextField
+                                label="Search by Country Name"
+                                variant="outlined"
+                                fullWidth
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                            />
+                        </Box>
+
+                        <Box sx={{ width: '100%', height: "auto", maxHeight: '450px', overflow: 'auto' }}>
+                            {isLoading && <Typography variant='h5' color={"primary"}>Loading...</Typography>}
+                            <DataGrid
+                                disableColumnFilter
+                                disableColumnMenu
+                                rows={tableRows}
+                                columns={columns}
+                                pageSize={10}
+                                rowsPerPageOptions={[10]}
+                                pagination
+                                paginationMode="server"
+                                rowCount={dataLength || 0}
+                                paginationModel={{
+                                    page: page - 1,
+                                    pageSize: 10,
                                 }}
-                                anchorEl={openClose3DotsMenu}
-                                open={open}
-                                onClose={() => setOpenClose3DotsMenu(null)}
-                                PaperProps={{
-                                    style: {
-                                        maxHeight: ITEM_HEIGHT * 4.5,
-                                        width: '20ch',
-                                    },
-                                }}
-                            >
-                                {options.map((option, index) => (
-                                    <MenuItem key={index} selected={option.isActive === isActiveCountry} onClick={() => {
-                                        if (option.name === 'Create Countries') {
-                                            handleCreateCountry();
-                                        } else {
-                                            handleClose(option.isActive);
-                                        }
-                                    }}>
-                                        {option.name}
-                                    </MenuItem>
-                                ))}
-                            </Menu>
-                        </div>
-                    </Box>
-
-                    <Box sx={{ width: '100%', height: "auto", mb: 2 }}>
-                        <TextField
-                            label="Search by Country Name"
-                            variant="outlined"
-                            fullWidth
-                            value={searchTerm}
-                            onChange={handleSearchChange}
-                        />
-                    </Box>
-
-                    <Box sx={{ width: '100%', height: "450px", overflow: 'scroll' }}>
-                        {isLoading && <Typography variant='h5' color={"primary"}>Loading...</Typography>}
-
-                        <DataGrid
-                            disableColumnFilter
-                            disableColumnMenu
-                            rows={tableRows}
-                            columns={columns}
-                            pageSize={10}
-                            rowsPerPageOptions={[10]}
-                            pagination
-                            paginationMode="server"
-                            rowCount={dataLength || 0}
-                            paginationModel={{
-                                page: page - 1,
-                                pageSize: 10,
-                            }}
-                            onPaginationModelChange={({ page }) => setPage(page + 1)}
-                        />
+                                onPaginationModelChange={({ page }) => setPage(page + 1)}
+                            />
+                        </Box>
                     </Box>
                 </div>
             </Box>

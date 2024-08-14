@@ -5,7 +5,7 @@ import { Box, Button } from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
 import Logo from "../assets/images/logo.png";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../slices/authSlice"; // Replace with your actual slice/action
+import { logout } from "../slices/authSlice";
 import LogoutIcon from '@mui/icons-material/Logout';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { useRouter } from "next/router";
@@ -27,7 +27,7 @@ const Header = ({ disableAccountSettings }) => {
 
   const handleLogout = () => {
     dispatch(logout());
-    router.push("/"); // Redirect to home page using Next.js router
+    router.push("/"); 
   };
 
   return (

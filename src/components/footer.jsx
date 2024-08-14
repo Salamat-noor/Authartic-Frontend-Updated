@@ -1,4 +1,4 @@
-// components/Footer.js
+
 import React from "react";
 import Link from "next/link";
 import { Box, Typography } from "@mui/material";

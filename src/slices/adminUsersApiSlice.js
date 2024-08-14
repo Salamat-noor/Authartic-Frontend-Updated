@@ -17,5 +17,5 @@ export const adminUserApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-// Export hooks for usage in functional components
+
 export const { useCountUsersQuery } = adminUserApiSlice;

@@ -471,5 +471,4 @@ function Index() {
   );
 }
 
-// export default Index;
 export default WithAuth(Index, ["VENDOR"]);

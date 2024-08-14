@@ -10,7 +10,7 @@ const VerificationModal = ({
   verifyVendorFunc,
   vendorId,
   fetchVendorsAgain,
-  fetchCodesAgain  // New prop for refreshing codes
+  fetchCodesAgain 
 }) => {
   const [validationCode, setValidationCode] = useState("");
 
@@ -30,7 +30,7 @@ const VerificationModal = ({
         handleVerificationSuccess(res?.data?.validation_code?.code);
         toast.success(res?.data?.vendor_name + " Verified Successfully");
         fetchVendorsAgain();
-        fetchCodesAgain(); // Refresh codes after successful verification
+        fetchCodesAgain(); 
         handleClose();
       }
     } catch (err) {

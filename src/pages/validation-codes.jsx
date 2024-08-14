@@ -20,7 +20,7 @@ const options = [
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 100, headerClassName: 'bg-[#22477F] text-slate-100 text-md md:text-lg' },
-  { field: 'is_used', headerName: 'is_used', minWidth: 150, headerClassName: 'bg-[#22477F] text-slate-100 text-md md:text-lg' },
+  { field: 'is_used', headerName: 'Is Used', minWidth: 150, headerClassName: 'bg-[#22477F] text-slate-100 text-md md:text-lg' },
   { field: 'code', headerName: 'Code', flex: 1, minWidth: 100, headerClassName: 'bg-[#22477F] text-slate-100 font-bold text-md md:text-lg' },
 ];
 
@@ -89,90 +89,90 @@ export default function PaginatedTable() {
   };
 
   return (
-    <div className='w-screen min-h-screen flex flex-col justify-between'>
-      <Box sx={{ width: "100%", height: "auto" }}>
-        <Header />
-        <div className='w-full md:w-[90%] lg:w-[70%] mx-auto mt-3'>
-          <Box sx={{ mb: "2rem" }}>
-            <Link href={'/admin-dashboard'} className='flex items-center justify-start gap-1'>
-              <ArrowBack color='primary' />
-              <Typography variant='h6' color={'primary'} className='text-sm sm:text-base md:text-lg'>
-                Admin Dashboard
-              </Typography>
-            </Link>
-          </Box>
+    <div className='w-full min-h-screen flex flex-col justify-between'>
+      <Header />
 
-          <Box sx={{ width: "100%", height: "auto", display: "flex", alignItems: 'center', justifyContent: "space-between" }}>
-            <Typography variant='h5' color={'primary'} marginBottom={1}>
-              {isUsed ? 'Used Codes' : 'Available Codes'}
+      <div className='w-full max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8'>
+        <Box sx={{ mb: "2rem" }}>
+          <Link href={'/admin-dashboard'} className='flex items-center justify-start gap-1'>
+            <ArrowBack color='primary' />
+            <Typography variant='h6' color={'primary'} className='text-sm sm:text-base md:text-lg'>
+              Admin Dashboard
             </Typography>
-            <div>
-              <IconButton
-                aria-label="more"
-                id="long-button"
-                aria-controls={open ? 'long-menu' : undefined}
-                aria-expanded={open ? 'true' : undefined}
-                aria-haspopup="true"
-                onClick={handleThreeDotsClick}
-              >
-                <MoreVertIcon />
-              </IconButton>
-              <Menu
-                id="long-menu"
-                MenuListProps={{
-                  'aria-labelledby': 'long-button',
-                }}
-                anchorEl={openClose3DotsMenu}
-                open={open}
-                onClose={() => setOpenClose3DotsMenu(null)}
-                PaperProps={{
-                  style: {
-                    maxHeight: ITEM_HEIGHT * 4.5,
-                    width: '20ch',
-                  },
-                }}
-              >
-                {options.map((option, index) => (
-                  <MenuItem
-                    key={index}
-                    selected={option.isUsed === isUsed}
-                    onClick={() => {
-                      if (option.name === 'Add Codes') {
-                        handleModalOpen();
-                      } else {
-                        handleClose(option.isUsed);
-                      }
-                    }}
-                  >
-                    {option.name}
-                  </MenuItem>
-                ))}
-              </Menu>
-            </div>
-          </Box>
+          </Link>
+        </Box>
 
-          <Box sx={{ width: '100%', height: "450px", overflow: 'scroll' }}>
-            {isLoading && <Typography variant='h5' color={"primary"}>Loading...</Typography>}
-
-            <DataGrid
-              disableColumnFilter
-              disableColumnMenu
-              rows={tableRows}
-              columns={columns}
-              pageSize={10}
-              rowsPerPageOptions={[10]}
-              pagination
-              paginationMode="server"
-              rowCount={data?.totalCount || 0}
-              paginationModel={{
-                page: page - 1,
-                pageSize: 10,
+        <Box sx={{ width: '100%', height: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+          <Typography variant='h5' color={'primary'}>
+            {isUsed ? 'Used Codes' : 'Available Codes'}
+          </Typography>
+          <div>
+            <IconButton
+              aria-label="more"
+              id="long-button"
+              aria-controls={open ? 'long-menu' : undefined}
+              aria-expanded={open ? 'true' : undefined}
+              aria-haspopup="true"
+              onClick={handleThreeDotsClick}
+            >
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              id="long-menu"
+              MenuListProps={{
+                'aria-labelledby': 'long-button',
               }}
-              onPaginationModelChange={({ page }) => setPage(page + 1)}
-            />
-          </Box>
-        </div>
-      </Box>
+              anchorEl={openClose3DotsMenu}
+              open={open}
+              onClose={() => setOpenClose3DotsMenu(null)}
+              PaperProps={{
+                style: {
+                  maxHeight: ITEM_HEIGHT * 4.5,
+                  width: '20ch',
+                },
+              }}
+            >
+              {options.map((option, index) => (
+                <MenuItem
+                  key={index}
+                  selected={option.isUsed === isUsed}
+                  onClick={() => {
+                    if (option.name === 'Add Codes') {
+                      handleModalOpen();
+                    } else {
+                      handleClose(option.isUsed);
+                    }
+                  }}
+                >
+                  {option.name}
+                </MenuItem>
+              ))}
+            </Menu>
+          </div>
+        </Box>
+
+        <Box sx={{ width: '100%', height: 'auto', maxHeight: 450, overflow: 'auto' }}>
+          {isLoading && <Typography variant='h5' color={"primary"}>Loading...</Typography>}
+
+          <DataGrid
+            disableColumnFilter
+            disableColumnMenu
+            rows={tableRows}
+            columns={columns}
+            pageSize={10}
+            rowsPerPageOptions={[10]}
+            pagination
+            paginationMode="server"
+            rowCount={data?.totalCount || 0}
+            paginationModel={{
+              page: page - 1,
+              pageSize: 10,
+            }}
+            onPaginationModelChange={({ page }) => setPage(page + 1)}
+          />
+        </Box>
+      </div>
+
       <Modal
         open={handleModelOpen}
         onClose={handleModalClose}
@@ -215,6 +215,7 @@ export default function PaginatedTable() {
           </div>
         </div>
       </Modal>
+
       <Footer />
     </div>
   );

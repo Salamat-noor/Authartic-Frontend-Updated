@@ -28,6 +28,7 @@ const options = [
 ];
 
 const ITEM_HEIGHT = 48;
+
 export default function UsersTable() {
   const [vendorId, setVendorId] = useState(null);
   const [isVerifiedVendors, setIsVerifiedVendors] = useState(true);
@@ -259,7 +260,7 @@ export default function UsersTable() {
       <div className="w-full min-h-screen flex flex-col justify-between">
         <Header />
 
-        <div className="w-full h-full mx-auto mb-7 px-2 md:px-7">
+        <div className="w-full flex flex-col justify-between mx-auto max-w-screen-xl px-2 md:px-7">
           <div className="my-7 text-left w-full">
             <Link
               href={"/admin-dashboard"}
@@ -384,7 +385,7 @@ export default function UsersTable() {
         </div>
 
         <Footer />
-
+        
         <VerificationModal
           open={open}
           handleClose={() => setOpen(false)}

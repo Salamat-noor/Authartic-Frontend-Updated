@@ -107,7 +107,7 @@ function Index() {
             font: formData.font,
             font_color: formData.font_color,
             bg_color: formData.bg_color,
-            saved_draft: toggleDraft, // Adjust based on your requirement
+            saved_draft: toggleDraft, 
             product_sell: formData.product_sell,
             product_image_id: productImageId,
           };
@@ -115,7 +115,7 @@ function Index() {
           const certificateResponse = await createCertificate(
             certificateData
           ).unwrap();
-          // Handle success - Reset form and show success message
+      
           setFormData(initialData);
           setImageFiles({
             productImage: null,
@@ -583,6 +583,6 @@ function Index() {
   );
 }
 
-// export default Index;
+
 export default WithAuth(Index, ['VENDOR']);
 

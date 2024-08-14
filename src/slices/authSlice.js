@@ -5,9 +5,10 @@ const isBrowser = typeof window !== "undefined";
 
 // Initial state setup
 const initialState = {
-  userInfo: isBrowser && localStorage.getItem("userInfo")
-    ? JSON.parse(localStorage.getItem("userInfo"))
-    : null,
+  userInfo:
+    isBrowser && localStorage.getItem("userInfo")
+      ? JSON.parse(localStorage.getItem("userInfo"))
+      : null,
 };
 
 // Create auth slice
@@ -30,6 +31,5 @@ const authSlice = createSlice({
   },
 });
 
-// Export actions and reducer
 export const { setCredentials, logout } = authSlice.actions;
 export default authSlice.reducer;

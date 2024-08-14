@@ -43,7 +43,7 @@ const AdminDashboard = () => {
     data: totalUsers,
     isLoading: isTotalUsersLoading,
     error: totalUsersError,
-  } = useCountUsersQuery({page: 1,  limit:12});
+  } = useCountUsersQuery({ page: 1, limit: 12 });
 
   const {
     data: totalReportsData,
@@ -51,10 +51,9 @@ const AdminDashboard = () => {
     error: TotalReportsDataError,
   } = useAdminNewReportProblemQuery({ page: 1 });
 
-
   useEffect(() => {
     if (totalUsers) {
-    } else {
+      // Handle side effects if needed
     }
   }, [totalUsers, totalUsersError]);
 
@@ -120,66 +119,69 @@ const AdminDashboard = () => {
       icon: <ReportProblemIcon fontSize="large" />,
     },
   ];
+
   return (
     <>
       <Head>
         <title>Admin Dashboard</title>
       </Head>
+      <Header />
+
       <div className="flex h-screen overflow-hidden">
-        {/* Drawer */}
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col">
-          <Header />
-          <main className="flex-1 p-6 bg-gray-100 overflow-auto">
-            <div className="mb-6 flex items-center justify-between">
-              <Typography
-                variant="h4"
-                component="h4"
-                className="font-bold text-gray-900"
-              >
-                Admin Dashboard
-              </Typography>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {cards.map((specs) => (
-                <Link
-                  key={specs.id}
-                  href={
-                    specs.title === "Users"
-                      ? "/users"
-                      : specs.title === "Vendor"
-                      ? "/vendors"
-                      : specs.title === "Validation Codes"
-                      ? "/validation-codes"
-                      : specs.title === "Countries"
-                      ? "/admin-countries"
-                      : specs.title === "Fonts"
-                      ? "/admin-fonts"
-                      : specs.title === "Report Problem"
-                      ? "/admin-report-problems"
-                      : ""
-                  }
+        <div className="flex-1 flex flex-col max-w-screen-xl mx-auto">
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col">
+            <main className="flex-1 p-6 overflow-auto">
+              <div className="mb-6 flex items-center justify-between">
+                <Typography
+                  variant="h4"
+                  component="h4"
+                  className="font-bold text-gray-900"
                 >
-                  <div className="bg-white shadow-md rounded-lg p-4 flex items-start space-x-4 hover:shadow-lg transition-shadow">
-                    <div className="flex-shrink-0">{specs.icon}</div>
-                    <div>
-                      <Typography variant="h6" className="text-gray-900" noWrap>
-                        {specs.title}
-                      </Typography>
-                      <Typography variant="body1" className="text-gray-600">
-                        {specs.count}
-                      </Typography>
+                  Admin Dashboard
+                </Typography>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {cards.map((specs) => (
+                  <Link
+                    key={specs.id}
+                    href={
+                      specs.title === "Users"
+                        ? "/users"
+                        : specs.title === "Vendor"
+                        ? "/vendors"
+                        : specs.title === "Validation Codes"
+                        ? "/validation-codes"
+                        : specs.title === "Countries"
+                        ? "/admin-countries"
+                        : specs.title === "Fonts"
+                        ? "/admin-fonts"
+                        : specs.title === "Report Problem"
+                        ? "/admin-report-problems"
+                        : ""
+                    }
+                  >
+                    <div className="bg-white shadow-md rounded-lg p-4 flex items-start space-x-4 hover:shadow-lg transition-shadow">
+                      <div className="flex-shrink-0">{specs.icon}</div>
+                      <div>
+                        <Typography variant="h6" className="text-gray-900">
+                          {specs.title}
+                        </Typography>
+                        <Typography variant="body1" className="text-gray-600">
+                          {specs.count}
+                        </Typography>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </main>
-          <Footer />
+                  </Link>
+                ))}
+              </div>
+            </main>
+          </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };
-// export default AdminDashboard;
+
 export default WithAuth(AdminDashboard, ["ADMIN"]);
