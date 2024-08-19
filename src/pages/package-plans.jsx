@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Button, Dialog, DialogContent, DialogTitle, DialogActions, TextField } from "@mui/material";
+import { Box, Typography, Button, Dialog, DialogContent, DialogTitle, DialogActions } from "@mui/material";
 import { toast } from 'react-toastify';
 import PackageCard from "@/components/packageCards";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import { useGetsubscrptionPlanQuery } from "@/slices/packageDataApiSlice";
 import { useSelector } from "react-redux";
-import { WithAuth } from "@/components/withAuth";
+import { useRouter } from 'next/router'; // Import the useRouter hook
 import { useResendVerificationEmailMutation } from "@/slices/userApiSlice";
+import { WithAuth } from "@/components/withAuth";
 
 const Index = () => {
-  const [isUserValidated, setIsUserValidated] = useState(null);
-  const [isEmailNotVerified, setIsEmailNotVerified] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [verificationCode, setVerificationCode] = useState("");
-  const [isVerificationCodeValid, setIsVerificationCodeValid] = useState(false);
   const { userInfo } = useSelector((state) => state?.auth);
+  const router = useRouter(); // Initialize the router
 
   const {
     data: subscriptionData,
@@ -24,18 +22,19 @@ const Index = () => {
     isLoading: isSubscriptionLoading,
   } = useGetsubscrptionPlanQuery();
 
-  // Mutation hook for resending verification email
-  const [resendVerificationEmail, { isLoading: resendLoading, isError: resendError, error: resendErrorDetails }] = useResendVerificationEmailMutation();
+  const [resendVerificationEmail, { isLoading: resendLoading }] = useResendVerificationEmailMutation();
 
   useEffect(() => {
     if (userInfo) {
-      setIsUserValidated(!userInfo?.user?.validation_code);
-      setIsEmailNotVerified(!userInfo?.user?.is_email_verified);
-      if (!userInfo?.user?.is_email_verified) {
+      const isEmailVerified = userInfo?.user?.is_email_verified;
+      if (!isEmailVerified) {
         setOpenModal(true);
+      } else {
+        // Redirect to the package purchase page if the email is verified
+        router.push('/package-plans');
       }
     }
-  }, [userInfo]);
+  }, [userInfo, router]);
 
   const handleResendVerification = async () => {
     if (!userInfo?.user?.email) {
@@ -45,108 +44,72 @@ const Index = () => {
 
     try {
       await resendVerificationEmail({ email: userInfo.user.email }).unwrap();
-      toast.success("Verification email has been sent!"); // Show success toast
-      // Keep the modal open
+      toast.success("Verification email has been sent!");
     } catch (err) {
       if (err.data && err.data.message) {
-        toast.error(`Failed to resend verification email: ${err.data.message}`); // Show detailed error message
+        toast.error(`Failed to resend verification email: ${err.data.message}`);
       } else {
-        toast.error("Failed to resend verification email. Please try again."); // General error message
+        toast.error("Failed to resend verification email. Please try again.");
       }
     }
   };
 
-  const handleVerifyEmail = async () => {
-    // Implement the actual email verification logic here
-    // Since we're not interacting with an API in this example, we'll simulate success
-    if (verificationCode === "expectedCode") { // Replace this condition with actual verification logic
-      toast.success("Email verified successfully!"); // Mock success
-      setOpenModal(false); // Close the modal after success
-    } else {
-      toast.error("Invalid verification code. Please try again.");
-    }
-  };
-
-  const handleVerificationCodeChange = (e) => {
-    const code = e.target.value;
-    setVerificationCode(code);
-    setIsVerificationCodeValid(code.trim().length > 0); // Enable button if input is not empty
-  };
-
   return (
-    <div className="min-h-screen flex flex-col justify-between">
+    <div className="min-h-screen flex flex-col justify-between relative">
       <Header />
-      <Box className="min-h-screen">
-        <Box className="max-w-[1440px] mx-auto bg-white relative">
-          {isUserValidated && (
-            <Typography variant="h5" color={'error'} className="text-center mt-12">
-              You will not be charged until after we validate your account.<br />
-              You will receive an email notification.
-            </Typography>
-          )}
 
-          <Box className="w-full min-h-[100vh] flex items-center justify-center pt-[7%] md:pt-0 pb-[150px]">
-            {isSubscriptionLoading && (
-              <h1 className="font-KoHo font-bold text-blue-600 text-[14px] sm:text-[18px] md:text-[24px]">
-                Loading! Please wait...
-              </h1>
-            )}
+      {/* Full-screen overlay when email is not verified */}
+      {openModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded shadow-lg">
+            <DialogTitle>Email Verification Required</DialogTitle>
+            <DialogContent>
+              <Typography>
+                Your email address is not verified yet. Please click the button below to resend the verification email.
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={handleResendVerification}
+                color="primary"
+                disabled={resendLoading}
+              >
+                {resendLoading ? "Sending..." : "Resend Verification Email"}
+              </Button>
+            </DialogActions>
+          </div>
+        </div>
+      )}
 
-            {subscriptionData && (
-              <Box className="grid items-end justify-items-center gap-7 md:gap-1 lg:gap-7 grid-cols-1 md:grid-cols-3 px-2">
-                {subscriptionData.map((data) => (
-                  <PackageCard data={data} key={data.id} />
-                ))}
-              </Box>
-            )}
-            {isSubscriptionError && (
-              <h1 className="font-KoHo font-bold text-red-600 text-[14px] sm:text-[18px] md:text-[24px]">
-                {subscriptionError?.error}
-              </h1>
-            )}
+      {/* Main Content */}
+      {!openModal && (
+        <Box className="min-h-screen">
+          <Box className="max-w-[1440px] mx-auto bg-white relative">
+            <Box className="w-full min-h-[100vh] flex items-center justify-center pt-[7%] md:pt-0 pb-[150px]">
+              {isSubscriptionLoading && (
+                <h1 className="font-KoHo font-bold text-blue-600 text-[14px] sm:text-[18px] md:text-[24px]">
+                  Loading! Please wait...
+                </h1>
+              )}
+
+              {subscriptionData && (
+                <Box className="grid items-end justify-items-center gap-7 md:gap-1 lg:gap-7 grid-cols-1 md:grid-cols-3 px-2">
+                  {subscriptionData.map((data) => (
+                    <PackageCard data={data} key={data.id} />
+                  ))}
+                </Box>
+              )}
+              {isSubscriptionError && (
+                <h1 className="font-KoHo font-bold text-red-600 text-[14px] sm:text-[18px] md:text-[24px]">
+                  {subscriptionError?.error}
+                </h1>
+              )}
+            </Box>
           </Box>
         </Box>
-      </Box>
+      )}
 
       <Footer />
-
-      {/* Modal for email verification */}
-      <Dialog
-        open={openModal}
-        onClose={() => {}}
-        aria-labelledby="email-verification-dialog"
-        aria-describedby="email-verification-dialog-description"
-      >
-        <DialogTitle id="email-verification-dialog">Email Verification Required</DialogTitle>
-        <DialogContent>
-          <Typography id="email-verification-dialog-description">
-            Please enter the verification code sent to your email and then verify your email address.
-          </Typography>
-          <TextField
-            label="Verification Code"
-            fullWidth
-            margin="dense"
-            value={verificationCode}
-            onChange={handleVerificationCodeChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleResendVerification}
-            color="primary"
-            disabled={resendLoading}
-          >
-            {resendLoading ? "Sending..." : "Resend Verification Email"}
-          </Button>
-          <Button
-            onClick={handleVerifyEmail}
-            color="primary"
-            disabled={!isVerificationCodeValid}
-          >
-            Verify Email
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 };
