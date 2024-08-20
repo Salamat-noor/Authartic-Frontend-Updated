@@ -45,6 +45,8 @@ export default function PaginatedTable() {
     data: reportsData,
     isLoading: isReportsLoading,
     error: reportsError,
+
+    
     refetch: reportsDataRefetch,
   } = useAdminNewReportProblemQuery({
     limit: 1000, // Fetch a large number of rows to avoid pagination

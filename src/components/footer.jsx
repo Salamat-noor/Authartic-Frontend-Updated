@@ -1,4 +1,3 @@
-
 import React from "react";
 import Link from "next/link";
 import { Box, Typography } from "@mui/material";
@@ -9,11 +8,17 @@ const Footer = () => {
       className="w-full flex justify-center items-center h-24 bg-[#22477F]"
       component="footer"
     >
-      <Box className="flex justify-center gap-20   text-white w-full">
+      <Box className="flex flex-wrap justify-center gap-14 text-white w-full px-4">
         <Link href="/about">
           <Typography
             variant="body1"
-            className="hover:underline font-kodchasan responsive-h1"
+            sx={{
+              fontWeight: 400,
+              "&:hover": {
+                textDecoration: "underline",
+              },
+            }}
+            className="font-kodchasan responsive"
           >
             About
           </Typography>
@@ -21,7 +26,13 @@ const Footer = () => {
         <Link href="/terms">
           <Typography
             variant="body1"
-            className="hover:underline font-kodchasan responsive-h1"
+            sx={{
+              fontWeight: 400,
+              "&:hover": {
+                textDecoration: "underline",
+              },
+            }}
+            className="font-kodchasan responsive"
           >
             Terms
           </Typography>
@@ -29,7 +40,13 @@ const Footer = () => {
         <Link href="/contact-us">
           <Typography
             variant="body1"
-            className="hover:underline font-kodchasan responsive-h1"
+            sx={{
+              fontWeight: 400,
+              "&:hover": {
+                textDecoration: "underline",
+              },
+            }}
+            className="font-kodchasan responsive"
           >
             Contact
           </Typography>
@@ -37,7 +54,13 @@ const Footer = () => {
         <Link href="/FAQ">
           <Typography
             variant="body1"
-            className="hover:underline font-kodchasan responsive-h1"
+            sx={{
+              fontWeight: 400,
+              "&:hover": {
+                textDecoration: "underline",
+              },
+            }}
+            className="font-kodchasan responsive "
           >
             Help
           </Typography>

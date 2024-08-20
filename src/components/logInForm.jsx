@@ -4,23 +4,23 @@ import Box from "@mui/material/Box";
 import RegisterBTN from "@/components/muiButton";
 import TextField from "@mui/material/TextField";
 import Link from "next/link";
-import { Button } from "@mui/material";
+import { Button, IconButton, InputAdornment } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { useLoginMutation } from "@/slices/userApiSlice";
 import { setCredentials } from "@/slices/authSlice";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 
-
 const LoginForm = ({ title, from }) => {
   const router = useRouter(); 
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [login] = useLoginMutation();
   const { userInfo } = useSelector((state) => state.auth);
-
 
   React.useEffect(() => {
     if (userInfo) {
@@ -80,6 +80,7 @@ const LoginForm = ({ title, from }) => {
       toast.error(errorMessage);
     }
   };
+
   return (
     <Box
       component="form"
@@ -134,6 +135,7 @@ const LoginForm = ({ title, from }) => {
         label="Password"
         fullWidth
         name="password"
+        type={showPassword ? "text" : "password"} // Toggle password visibility
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         sx={{
@@ -158,6 +160,19 @@ const LoginForm = ({ title, from }) => {
           },
         }}
         className="mb-10"
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                onClick={() => setShowPassword(!showPassword)}
+                onMouseDown={(e) => e.preventDefault()}
+                edge="end"
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
       />
       <div className="flex items-center justify-between md:justify-center px-3 md:p-0">
         <div className="flex items-center justify-start overflow-hidden bg-[#22477F] p-[1px]  rounded-[7px]">
@@ -183,4 +198,5 @@ const LoginForm = ({ title, from }) => {
     </Box>
   );
 };
+
 export default LoginForm;

@@ -19,7 +19,7 @@ module.exports = {
         poppins: ["Poppins"],
       },
       fontSize: {
-        "responsive-h1": "calc(16px + 2vw)",
+        responsive: "calc(16px + 2vw)",
       },
       screens: {
         '4k': '2560px', // Add a custom breakpoint if necessary
