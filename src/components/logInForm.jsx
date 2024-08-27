@@ -24,6 +24,7 @@ const LoginForm = ({ title, from }) => {
 
   React.useEffect(() => {
     if (userInfo) {
+    
       if (userInfo.role === "ADMIN") {
         router.push("/admin-dashboard");
       } else if (userInfo.role === "VENDOR") {
@@ -52,6 +53,7 @@ const LoginForm = ({ title, from }) => {
     }
     try {
       const res = await login({ email, password, role: selectedRole }).unwrap();
+
       if (res.user) {
         if (res.user.role !== selectedRole) {
           toast.error("Access denied. Invalid role.");

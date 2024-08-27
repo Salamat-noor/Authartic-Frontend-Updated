@@ -8,6 +8,8 @@ import TextareaAutosize from "@mui/material/TextareaAutosize";
 import Button from "@mui/material/Button";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { useContactUsMutation } from "@/slices/contactUsApislice";
+import { toast } from "react-toastify"; 
 
 const Form = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +19,8 @@ const Form = () => {
     message: "",
   });
 
+  const [contactUs] = useContactUsMutation(); 
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -25,17 +29,43 @@ const Form = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const dataToSend = {
+      name: formData.name,
+      email: formData.email,
+      subject: formData.select, 
+      message: formData.message,
+    };
+
+    try {
+      
+      await contactUs(dataToSend).unwrap(); 
+      toast.success("Message sent successfully!"); 
+
+      // Clear form data
+      setFormData({
+        name: "",
+        email: "",
+        select: "",
+        message: "",
+      });
+    } catch (err) {
+      // Show error toast with the error message
+      toast.error(
+        `Failed to send message: ${err.message || "Please try again."}`
+      );
+    }
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col justify-between">
+    <div className="min-h-screen w-full flex flex-col justify-between items-center">
       <Header />
 
-      <div className="w-full h-full flex items-center justify-center my-5 md:my-11">
+      <div className="md:w-full md:max-w-[565px] h-full flex items-center justify-center my-5 md:my-11">
         <form
-          className="w-full lg:w-[800px] xl:w-[70%] mx-2 sm:mx-4 md:mx-10 lg:mx-auto"
+          className="w-full  lg:w-[800px] xl:w-[70%] mx-10 sm:mx-4 md:mx-10 lg:mx-auto"
           onSubmit={handleSubmit}
         >
           <div className="mb-4 xl:mb-[1vw] w-full">
@@ -52,24 +82,23 @@ const Form = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="bg-gray-100  min-h-[46px]"
+              className="bg-gray-100 min-h-[46px]"
               sx={{
                 width: "100%",
                 "& .MuiOutlinedInput-root": {
-                  border: "none", // Remove border from the root of outlined input
+                  border: "none",
                   width: "100%",
                 },
                 "& .MuiOutlinedInput-input": {
-                  padding: "10px", // Optional: Adjust padding if needed
+                  padding: "10px",
                   width: "100%",
-
                   "@media (min-width:1440px)": {
                     fontSize: "1vw",
                     padding: ".5vw",
                   },
                 },
                 "& .MuiOutlinedInput-notchedOutline": {
-                  border: "none", // Remove outline border
+                  border: "none",
                   width: "100%",
                 },
               }}
@@ -95,20 +124,19 @@ const Form = () => {
               sx={{
                 width: "100%",
                 "& .MuiOutlinedInput-root": {
-                  border: "none", // Remove border from the root of outlined input
+                  border: "none",
                   width: "100%",
                 },
                 "& .MuiOutlinedInput-input": {
-                  padding: "10px", // Optional: Adjust padding if needed
+                  padding: "10px",
                   width: "100%",
-
                   "@media (min-width:1440px)": {
                     fontSize: "1vw",
                     padding: ".5vw",
                   },
                 },
                 "& .MuiOutlinedInput-notchedOutline": {
-                  border: "none", // Remove outline border
+                  border: "none",
                   width: "100%",
                 },
               }}
@@ -132,20 +160,20 @@ const Form = () => {
                 sx={{
                   width: "100%",
                   outline: "none",
-                  border: "none", // Remove border from Select itself
+                  border: "none",
                   "& fieldset": {
-                    border: "none !important", // Remove border from the fieldset element
+                    border: "none !important",
                   },
                   "& .MuiOutlinedInput-root, & .MuiMenuItem-root": {
-                    border: "none", // Remove border from child elements (OutlinedInput and MenuItem)
+                    border: "none",
                     outline: "none",
                     "&:hover, &.Mui-focused": {
-                      border: "none", // Remove border on hover and focus for child elements
+                      border: "none",
                       outline: "none",
                     },
                   },
                   "& .MuiOutlinedInput-input": {
-                    padding: "10px 14px", // Adjust input padding if necessary
+                    padding: "10px 14px",
                   },
                 }}
               >

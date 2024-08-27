@@ -13,6 +13,8 @@ export const VENDOR_FONT_URL = "/font/active";
 export const ADMIN_FONTS_URL = '/admin/font'
 export const REPORT_PROBLEM_URL = '/report-problem'
 export const ADMIN_REPORT_PROBLEM_URL = '/admin/report-problem'
+export const CONTACT_US_URL = '/contact'
+
 
 
 

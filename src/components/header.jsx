@@ -2,19 +2,22 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Box, Button } from "@mui/material";
-import HomeIcon from '@mui/icons-material/Home';
+import HomeIcon from "@mui/icons-material/Home";
 import Logo from "../assets/images/logo.png";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../slices/authSlice";
-import LogoutIcon from '@mui/icons-material/Logout';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+// import { logout } from "../slices/authSlice";
+import LogoutIcon from "@mui/icons-material/Logout";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import { useLogoutMutation } from "@/slices/userApiSlice";
+import { toast } from "react-toastify";
 
 const Header = ({ disableAccountSettings }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const token = useSelector((state) => state.auth.userInfo?.access_token);
+  const [logoutApiCall] = useLogoutMutation();
 
   const [authStatus, setAuthStatus] = useState(false);
   useEffect(() => {
@@ -25,11 +28,22 @@ const Header = ({ disableAccountSettings }) => {
     }
   }, []);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    router.push("/"); 
-  };
+  // const handleLogout = () => {
+  //   dispatch(logout());
+  //   router.push("/");
+  // };
 
+  const handleLogout = async () => {
+    try {
+      await logoutApiCall().unwrap();
+      
+      router.push("/");
+      toast.success("Successfully logged out!"); // Show success toast
+    } catch (error) {
+      toast.error("Failed to log out. Please try again."); // Show error toast
+    }
+  };
+  
   return (
     <Box
       display="flex"
@@ -62,30 +76,32 @@ const Header = ({ disableAccountSettings }) => {
         </Link>
       ) : (
         <div className="flex flex-col items-end gap-1">
-          {disableAccountSettings === "Yes" ? <Link href={"/"}>
-            <Button
-              variant="h6"
-              color="inherit"
-              className="font-Kodchasan text-[20px] font-semibold cursor-pointer p-0  flex items-center gap-1"
+          {disableAccountSettings === "Yes" ? (
+            <Link href={"/"}>
+              <Button
+                variant="h6"
+                color="inherit"
+                className="font-Kodchasan text-[20px] font-semibold cursor-pointer p-0  flex items-center gap-1"
+              >
+                <HomeIcon />
+                Home
+              </Button>
+            </Link>
+          ) : (
+            <Link href={"/"}>
+              <Button
+                variant="h6"
+                color="inherit"
+                className="font-Kodchasan text-[20px] font-semibold cursor-pointer p-0  flex items-center gap-1"
+                onClick={handleLogout}
+              >
+                <LogoutIcon />
+                Logout
+              </Button>
+            </Link>
+          )}
 
-            >
-              <HomeIcon />
-              Home
-            </Button>
-          </Link> : <Link href={"/"}>
-            <Button
-              variant="h6"
-              color="inherit"
-              className="font-Kodchasan text-[20px] font-semibold cursor-pointer p-0  flex items-center gap-1"
-              onClick={handleLogout}
-            >
-              <LogoutIcon />
-              Logout
-            </Button>
-          </Link>}
-
-
-          {disableAccountSettings === "Yes" ?
+          {disableAccountSettings === "Yes" ? (
             <Link href={"/"}>
               <Button
                 variant="h6"
@@ -96,12 +112,16 @@ const Header = ({ disableAccountSettings }) => {
                 <LogoutIcon />
                 Logout
               </Button>
-            </Link> :
-            <Link href={"/account-settings"} className="font-Kodchasan text-sm font-medium cursor-pointer p-0 flex items-center gap-1">
+            </Link>
+          ) : (
+            <Link
+              href={"/account-settings"}
+              className="font-Kodchasan text-sm font-medium cursor-pointer p-0 flex items-center gap-1"
+            >
               <ManageAccountsIcon />
               <small>account-settings</small>
-            </Link>}
-
+            </Link>
+          )}
         </div>
       )}
     </Box>
