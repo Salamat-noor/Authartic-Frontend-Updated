@@ -4,8 +4,7 @@ import Image from "next/image";
 import { Box, Button } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import Logo from "../assets/images/logo.png";
-import { useSelector, useDispatch } from "react-redux";
-// import { logout } from "../slices/authSlice";
+import { useSelector } from "react-redux";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { useRouter } from "next/router";
@@ -14,7 +13,6 @@ import { useLogoutMutation } from "@/slices/userApiSlice";
 import { toast } from "react-toastify";
 
 const Header = ({ disableAccountSettings }) => {
-  const dispatch = useDispatch();
   const router = useRouter();
   const token = useSelector((state) => state.auth.userInfo?.access_token);
   const [logoutApiCall] = useLogoutMutation();
@@ -26,13 +24,9 @@ const Header = ({ disableAccountSettings }) => {
     } else {
       setAuthStatus(false);
     }
-  }, []);
+  }, [token]);
 
-  // const handleLogout = () => {
-  //   dispatch(logout());
-  //   router.push("/");
-  // };
-
+ 
   const handleLogout = async () => {
     try {
       await logoutApiCall().unwrap();

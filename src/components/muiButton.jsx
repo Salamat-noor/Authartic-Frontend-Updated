@@ -18,6 +18,7 @@ export default function CustomButton({ title, }) {
 
   }, [currentUser, currentUserRefetch, isCurrentUserError, title])
 
+
   return (
     <Link href={title === "Register" ? "/registration" : redirectionURL === "Pro" ? "/pro-plan-vendor"
       : redirectionURL === "Standard" ? "/standard-plan"

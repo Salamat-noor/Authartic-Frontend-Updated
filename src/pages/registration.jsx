@@ -83,7 +83,7 @@ const Registration = () => {
             variant="contained"
             className="w-100px mt-16 bg-[#22477F] rounded-[7px] font-kodchasan font-[700]"
           >
-            I don't have a validation code
+            I Don&apos;t have a validation code
           </Button>
         </Link>
       </Box>

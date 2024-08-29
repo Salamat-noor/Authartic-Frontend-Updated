@@ -14,7 +14,7 @@ import { useGetAdminALLFontsCountQuery } from "@/slices/fontApiSlice";
 import { useCountCountriesQuery } from "@/slices/countriesApiSlice";
 import { useCountCodesQuery } from "@/slices/validationCodeApiSlice";
 import { useCountUsersQuery } from "@/slices/adminUsersApiSlice";
-import { WithAuth } from "@/components/withAuth";
+import WithAuth from '@/components/withAuth';
 import { useCountVendorsQuery } from "@/slices/vendorsApliSlices";
 import { useAdminNewReportProblemQuery } from "@/slices/reportProblemApiSlice";
 

@@ -10,7 +10,7 @@ import {
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import image from "../assets/images/image.png";
-import { WithAuth } from "@/components/withAuth";
+import WithAuth from '@/components/withAuth';
 import { useReportProblemMutation } from "@/slices/reportProblemApiSlice";
 
 function IssueMore() {

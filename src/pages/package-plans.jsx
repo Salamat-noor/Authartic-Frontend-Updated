@@ -16,7 +16,7 @@ import { useGetsubscrptionPlanQuery } from "@/slices/packageDataApiSlice";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { useResendVerificationEmailMutation } from "@/slices/userApiSlice";
-import { WithAuth } from "@/components/withAuth";
+import WithAuth from "@/components/withAuth";
 
 const Index = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -58,70 +58,83 @@ const Index = () => {
   };
 
   const handleOpenGmail = () => {
-    window.open('https://mail.google.com/', '_blank');
+    window.open("https://mail.google.com/", "_blank");
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col justify-between min-h-screen"
+    style={{overflow:"scroll", height:"100vh"}}>
       <Header />
+      <Box >
+        {/* Message for unverified email */}
+        {!userInfo?.user?.validation_code && (
+          <Box className="text-center m-10">
+            <Typography variant="body1">
+              You will not be charged until after we validate your account.{" "}
+              <br /> You will receive an email notification.
+            </Typography>
+          </Box>
+        )}
 
-      {/* Full-screen overlay when email is not verified */}
-      {openModal && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded shadow-lg max-w-sm w-full mx-4 sm:mx-auto">
+        {/* Full-screen overlay when email is not verified */}
+        {openModal && (
+          <Dialog open={openModal} onClose={() => setOpenModal(false)}>
             <DialogTitle>Email Verification Required</DialogTitle>
             <DialogContent>
               <Typography>
-                Your email address is not verified yet. Please click the button
-                below to resend the verification email or open your email client.
+                Your email address <strong>{userInfo?.user?.email}</strong> is
+                not verified yet. Please click the button below to resend the
+                verification email or open your email client.
               </Typography>
             </DialogContent>
             <DialogActions>
               <Button
                 onClick={handleResendVerification}
-                color="primary"
+                className="cursor-pointer font-kodchasan text-md md:text-lg xl:text-xl text-black border-1 border-solid border-[#22477F] font-normal py-1 px-5 md:px-9"
                 disabled={resendLoading}
               >
-                {resendLoading ? "Sending..." : "Resend Verification Email"}
+                {resendLoading ? "Sending..." : "Send Again"}
               </Button>
               <Button
                 onClick={handleOpenGmail}
-                color="secondary"
+                className="cursor-pointer font-kodchasan text-md md:text-lg xl:text-xl text-white hover:bg-[#22477F] font-normal py-1 px-5 md:px-9 bg-[#22477F]"
               >
                 Open Gmail
               </Button>
             </DialogActions>
-          </div>
-        </div>
-      )}
+          </Dialog>
+        )}
 
-      {/* Main Content */}
-      <Box className="">
-        <Box className="max-w-[1440px] mx-auto bg-white">
-          <Box className="w-full min-h-[100vh] flex items-center justify-center pt-[7%] md:pt-0 pb-[150px]">
-            {isSubscriptionLoading && (
-              <h1 className="font-KoHo font-bold text-blue-600 text-[14px] sm:text-[18px] md:text-[24px]">
-                Loading! Please wait...
-              </h1>
-            )}
+        {/* Main Content */}
+        <Box className="flex-1 pt-16 ">
+          {" "}
+          {/* Adjusted for fixed message */}
+          <Box className="max-w-[1440px] mx-auto bg-white">
+            <Box className="w-full  flex items-center justify-center pt-[7%] md:pt-0 pb-[150px]">
+              {isSubscriptionLoading && (
+                <h1 className="font-KoHo font-bold text-blue-600 text-[14px] sm:text-[18px] md:text-[24px]">
+                  Loading! Please wait...
+                </h1>
+              )}
 
-            {subscriptionData && (
-              <Box className="grid items-end justify-items-center gap-7 md:gap-1 lg:gap-7 grid-cols-1 md:grid-cols-3 px-2">
-                {subscriptionData.map((data) => (
-                  <PackageCard data={data} key={data.id} />
-                ))}
-              </Box>
-            )}
-            {isSubscriptionError && (
-              <h1 className="font-KoHo font-bold text-red-600 text-[14px] sm:text-[18px] md:text-[24px]">
-                {subscriptionError?.error}
-              </h1>
-            )}
+              {subscriptionData && (
+                <Box className="grid items-end justify-items-center gap-7 md:gap-1 lg:gap-7 grid-cols-1 md:grid-cols-3 px-2">
+                  {subscriptionData.map((data) => (
+                    <PackageCard data={data} key={data.id} />
+                  ))}
+                </Box>
+              )}
+              {isSubscriptionError && (
+                <h1 className="font-KoHo font-bold text-red-600 text-[14px] sm:text-[18px] md:text-[24px]">
+                  {subscriptionError?.error}
+                </h1>
+              )}
+            </Box>
           </Box>
         </Box>
-      </Box>
 
-      {/* Footer */}
+        {/* Footer */}
+      </Box>
       <Footer />
     </div>
   );

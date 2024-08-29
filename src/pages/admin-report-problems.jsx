@@ -77,7 +77,7 @@ export default function PaginatedTable() {
   // Effect to fetch reports data on search query change
   useEffect(() => {
     reportsDataRefetch();
-  }, [debouncedSearchQuery]);
+  }, [debouncedSearchQuery, reportsDataRefetch]);
 
   // Handle Edit Click
   const handleEdit = (row) => {

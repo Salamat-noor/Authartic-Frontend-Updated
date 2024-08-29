@@ -1,17 +1,17 @@
+import React from 'react';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 
-export const WithAuth = (WrappedComponent, rolesRequired = []) => {
-  return (props) => {
+const WithAuth = (WrappedComponent, rolesRequired = []) => {
+  const AuthHOC = (props) => {
     const router = useRouter();
     const userInfo = useSelector((state) => state.auth.userInfo);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [hasRequiredRole, setHasRequiredRole] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [shouldRedirect, setShouldRedirect] = useState(false);
 
     useEffect(() => {
       if (userInfo?.access_token) {
@@ -23,16 +23,20 @@ export const WithAuth = (WrappedComponent, rolesRequired = []) => {
         }
       } else {
         setIsLoggedIn(false);
-        setShouldRedirect(true);
+        setHasRequiredRole(false);
       }
       setIsLoading(false);
     }, [userInfo]);
 
     useEffect(() => {
-      if (!isLoading && !hasRequiredRole) {
-        router.push("/unauthorized");
+      if (!isLoading) {
+        if (!isLoggedIn) {
+          router.push("/login"); // Redirect to login if not logged in
+        } else if (!hasRequiredRole) {
+          router.push("/unauthorized"); // Redirect to unauthorized if roles don't match
+        }
       }
-    }, [isLoading, shouldRedirect, hasRequiredRole, router]);
+    }, [isLoading, isLoggedIn, hasRequiredRole, router]);
 
     if (isLoading) {
       return (
@@ -48,9 +52,18 @@ export const WithAuth = (WrappedComponent, rolesRequired = []) => {
         </Box>
       );
     }
+
     if (!isLoggedIn || !hasRequiredRole) {
-      return null;
+      return null; // Render nothing if not logged in or unauthorized
     }
+
     return <WrappedComponent {...props} />;
   };
+
+  AuthHOC.displayName = `WithAuth(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
+
+  return AuthHOC;
 };
+
+
+export default WithAuth;

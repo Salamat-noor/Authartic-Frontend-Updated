@@ -26,8 +26,9 @@ const About = () => {
             as humans to have them, that we will be able to save our earth. We
             know that people love owning things, we love to express ourselves,
             it is in our nature. But our consumer habits have become unethical.
-            We dont think its reasonable to ask you to stop owning things, but
-            we can hope and dream that you&apos;ll own only good things.
+            We don&apos;t think it&apos;s reasonable to ask you to stop owning
+            things, but we can hope and dream that you&apos;ll own only good
+            things.
           </p>
           <br />
           <p>
@@ -54,7 +55,7 @@ const About = () => {
             originality and the hard work that goes into each unique piece.
             Having a centralized system for certificates of authenticity
             guarantees that the products you purchase are authentic, preserving
-            the integrity of our artists' work and discouraging counterfeiters.
+            the integrity of our artists&apos; work and discouraging counterfeiters.
             If you buy a second hand product that you believe comes from one of
             our partnered vendors, always ask for the Oizter certificate to make
             sure that it is original!

@@ -128,13 +128,13 @@ export default function PackageCard({ data }) {
       </Box>
       {data.id === 2 ? (
         <div className="flex justify-center">
-          <p className="max-w-[329px] text-center md:h-[150px] md:absolute top-full left-0 my-5 font-koho font-light text-[16px] text-[#080808] p-3">
+          <p className="max-w-[329px] text-center md:h-[150px] md:absolute top-1000px left-200px  my-5 font-koho font-light text-[16px] text-[#080808] p-3">
             *Customize Certificates by choosing fonts and certificate colors
           </p>
         </div>
       ) : data.id === 3 ? (
         <div className="flex justify-center">
-          <p className="max-w-[329px] text-center md:h-[150px] md:absolute top-full left-0 my-5 font-koho font-light text-[16px] text-[#080808] p-3">
+          <p className="max-w-[329px]  text-center md:h-[150px] md:absolute top-1000px left-200px my-5 font-koho font-light text-[16px] text-[#080808] p-3">
             *Customize Certificates by choosing fonts and certificate colors and
             certificate frame as well as setting a custom image background
           </p>
