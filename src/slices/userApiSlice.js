@@ -48,11 +48,39 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     }),
     resendVerificationEmail: builder.mutation({
       query: () => ({
-        url: "/user/resend-verification-email",
+        url: "/user/resend-verification-email-vendor",
         method: "POST",
         headers: {
           Authorization: `Bearer ${getTokenFromLocalStorage()}`,
         },
+      }),
+    }),
+    findEmail: builder.mutation({
+      query: (requestData) => ({
+        url: "/user/find-email",
+        method: "POST",
+        body: requestData,
+      }),
+    }),
+    sendOtpEmail: builder.mutation({
+      query: (otpRequestData) => ({
+        url: "/user/send-otp-email",
+        method: "POST",
+        body: otpRequestData,
+      }),
+    }),
+    verificationAccount: builder.mutation({
+      query: (verifyData) => ({
+        url: "/user/verify-otp",
+        method: "POST",
+        body: verifyData,
+      }),
+    }),
+    updatePassword: builder.mutation({
+      query: (updateData) => ({
+        url: '/user/update-password',
+        method: 'PUT',
+        body: updateData,
       }),
     }),
   }),
@@ -65,4 +93,8 @@ export const {
   useUpdateProfileMutation,
   useLogoutMutation,
   useResendVerificationEmailMutation,
+  useFindEmailMutation,
+  useSendOtpEmailMutation,
+  useVerificationAccountMutation,
+  useUpdatePasswordMutation 
 } = usersApiSlice;

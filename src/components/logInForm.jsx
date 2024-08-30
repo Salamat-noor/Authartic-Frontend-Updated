@@ -191,7 +191,7 @@ const LoginForm = ({ title, from }) => {
       </div>
       <div className="flex flex-col items-end justify-start my-3">
         <Link
-          href={"/"}
+          href={"/recover-password"}
           className={`text-black font-bold text-[15px] font-kodchasan`}
         >
           Recover Lost Account
