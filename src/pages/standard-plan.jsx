@@ -239,7 +239,7 @@ function Index() {
 
           <Box className="flex flex-col md:flex-row md:justify-around items-center mb-6">
             {/* HANDLE PRODUCT IMAGE UPLOAD */}
-            <Box className="md:bg-[#ADA8A8] bg-transparent rounded-br-[20px] rounded-bl-[20px] p-8 max-w-[280px] w-full mb-4 md:mb-0">
+            <Box className="md:bg-[#ADA8A8] bg-transparent rounded-br-[20px] rounded-bl-[20px] p-8 max-w-[280px] w-full mb-4 mr-1 md:mb-0">
               <Button className="flex text-black bg-[#fff] rounded-[41.47px] px-4 py-4 gap-2">
                 {productImagePreview.productImagePreview ? (
                   <Avatar
