@@ -12,16 +12,19 @@ import Footer from "@/components/footer";
 import image from "../assets/images/image.png";
 import WithAuth from '@/components/withAuth';
 import { useReportProblemMutation } from "@/slices/reportProblemApiSlice";
+import { useReIssueExistingMutation } from "@/slices/reIssueExistingApiSlice";
 
 function IssueMore() {
   const router = useRouter();
-  const [issueState, setIssueState] = useState("issueMore");
+  const [issueState, setIssueState] = useState('');
   const [reIssueCertificateNo, setReIssueCertificateNo] = useState(0);
+  const [reIssueExistingId, setReIssueExistingId] = useState(0);
   const [acknowledge, setAcknowledge] = useState(false);
   const [reportText, setReportText] = useState(""); // State for report problem
 
-  const { id: certificateInfoId, saved_draft: certificateSavedDraft } = router.query;
+  const { id: certificateInfoId, saved_draft: certificateSavedDraft, btn: clickedinfo } = router.query;
 
+  const [reIssueExisting, { isLoading: isReIssueExistingLoading, error: reIssueExistingError }] = useReIssueExistingMutation();
 
   const [
     reIssueCertificate,
@@ -61,7 +64,7 @@ function IssueMore() {
         refetch();
       }
     } catch (err) {
-      
+
 
       if (err?.response?.data) {
         toast.error(err.response.data.message || "An unknown error occurred");
@@ -79,20 +82,20 @@ function IssueMore() {
       if (!certificateInfoId) {
         throw new Error("Certificate ID is not defined");
       }
-  
+
       const res = await reportProblem({ id: certificateInfoId, reporting_text: reportText });
-  
+
       if (res?.error) {
         // Check if there's a specific error message or fallback to a generic one
         toast.error("An error occurred: " + (res.error.message || "Unknown error"));
-        
+
       } else {
         toast.success("Your problem report has been submitted.");
         setReportText(""); // Clear the text field
         setIssueState("issueMore"); // Optionally, revert to the initial state
       }
     } catch (err) {
-  
+
       // Enhanced error handling
       if (err?.response?.data) {
         toast.error(err.response.data.message || "An unknown error occurred");
@@ -103,14 +106,40 @@ function IssueMore() {
       }
     }
   };
-  
-  const lastIssuedDate = new Date(certificateInfo?.data[0]?.issued_date).toLocaleString();
+
+  const handleReIssueExistingSubmit = async () => {
+    const data2Send = {
+      id: certificateInfoId,
+      body: {
+        certificate_id: reIssueExistingId
+      }
+    }
+    try {
+      const response = await reIssueExisting(data2Send).unwrap()
+      if (response) {
+        toast.success(response?.message || 'Certificate reissued successfully.');
+      }
+    } catch (error) {
+      toast.error(error?.data?.message || error?.error || error?.status || error?.data?.error || error?.data?.statusCode)
+    }
+  }
+  const handleReIssueExistingCancel = () => {
+    setReIssueExistingId(0);
+  }
 
   const handleCancel = () => {
     setReIssueCertificateNo(0);
     setAcknowledge(false);
     setReportText(""); // Clear the report text field
   };
+
+  useEffect(() => {
+    if (clickedinfo) {
+      setIssueState(clickedinfo)
+    }
+  }, [clickedinfo])
+
+  const lastIssuedDate = new Date(certificateInfo?.data?.issued_date).toLocaleString();
 
   return (
     <>
@@ -119,7 +148,7 @@ function IssueMore() {
         <Box className="flex items-center justify-center flex-col sm:flex-row gap-[1vw]">
           <Box>
             <Image
-              src={certificateInfo?.data[0]?.product_image?.url || image}
+              src={certificateInfo?.data?.product_image?.url || image}
               alt="sample"
               width={168}
               height={126}
@@ -128,13 +157,13 @@ function IssueMore() {
 
           <Box className="flex flex-col gap-1">
             <Typography className="font-koho text-[#080808] font-light text-[20px]">
-              {certificateInfo?.data[0]?.name || "example name"}
+              {certificateInfo?.data?.name || "example name"}
             </Typography>
             <Typography className="font-koho text-[#080808] font-light text-[20px]">
               {lastIssuedDate || "example Date"}
             </Typography>
             <Typography className="font-koho text-[#080808] font-light text-[20px]">
-              <span className="text-slate-500">number of certificates issued</span> {certificateInfo?.data[0]?.issued || 0}
+              <span className="text-slate-500">number of certificates issued</span> {certificateInfo?.data?.issued || 0}
             </Typography>
           </Box>
 
@@ -142,9 +171,8 @@ function IssueMore() {
             <Button
               type="submit"
               variant="contained"
-              className={`rounded-[7px] font-kodchasan float-end py-0 ${
-                issueState === "issueMore" ? "bg-[#C2C3CE]" : "bg-[#22477F]"
-              }`}
+              className={`rounded-[7px] font-kodchasan float-end py-0 ${issueState === "issueMore" ? "bg-[#C2C3CE]" : "bg-[#22477F]"
+                }`}
               onClick={() => setIssueState("issueMore")}
             >
               Issue More
@@ -152,9 +180,8 @@ function IssueMore() {
             <Button
               type="submit"
               variant="contained"
-              className={`rounded-[7px] font-kodchasan float-end py-0 ${
-                issueState === "reissueExisting" ? "bg-[#C2C3CE]" : "bg-[#22477F]"
-              }`}
+              className={`rounded-[7px] font-kodchasan float-end py-0 ${issueState === "reissueExisting" ? "bg-[#C2C3CE]" : "bg-[#22477F]"
+                }`}
               onClick={() => setIssueState("reissueExisting")}
             >
               Reissue existing
@@ -162,9 +189,8 @@ function IssueMore() {
             <Button
               type="button"
               variant="contained"
-              className={`rounded-[7px] font-kodchasan py-0 ${
-                issueState === "reportIssue" ? "bg-[#C2C3CE]" : "bg-[#22477F]"
-              }`}
+              className={`rounded-[7px] font-kodchasan py-0 ${issueState === "reportIssue" ? "bg-[#C2C3CE]" : "bg-[#22477F]"
+                }`}
               onClick={() => setIssueState("reportIssue")}
             >
               Report Problem
@@ -235,10 +261,13 @@ function IssueMore() {
 
               <Box>
                 <TextField
+                  type="number"
                   variant="outlined"
                   fullWidth
                   placeholder="Enter certificate number here"
                   className="my-6"
+                  value={reIssueExistingId}
+                  onChange={e => setReIssueExistingId(e.target.value)}
                   sx={{
                     backgroundColor: "#fff",
                     maxWidth: "508px",
@@ -282,6 +311,8 @@ function IssueMore() {
             </Box>
             <Box className="flex justify-center items-center flex-col">
               <Button
+                onClick={handleReIssueExistingSubmit}
+                disabled={isReIssueExistingLoading}
                 variant="contained"
                 className="bg-[#27A213] rounded-[7px] font-kodchasan w-[189px]"
                 sx={{ fontFamily: "Kodchasan, sans-serif" }}
@@ -289,6 +320,7 @@ function IssueMore() {
                 Place Order
               </Button>
               <Button
+                onClick={handleReIssueExistingCancel}
                 variant="contained"
                 className="bg-[#A21313] rounded-[7px] font-kodchasan mt-5 w-[189px]"
                 sx={{ fontFamily: "Kodchasan, sans-serif" }}

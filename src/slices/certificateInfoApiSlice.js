@@ -15,7 +15,7 @@ export const certificateInfoApiSlice = apiSlice.injectEndpoints({
     }),
     getCertificateinfoById: builder.query({
       query: (params) => ({
-        url: `${CERTIFICATE_INFO_URL}/?saved_draft=${params.certificateSavedDraft}&id=${params.certificateInfoId}`,
+        url: `${CERTIFICATE_INFO_URL}/${params.certificateInfoId}?saved_draft=${params.certificateSavedDraft}`,
         method: "GET",
         headers: {
           Authorization: `Bearer ${getTokenFromLocalStorage()}`, // Replace with your function to get the token
