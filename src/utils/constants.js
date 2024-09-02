@@ -14,6 +14,7 @@ export const ADMIN_FONTS_URL = '/admin/font'
 export const REPORT_PROBLEM_URL = '/report-problem'
 export const ADMIN_REPORT_PROBLEM_URL = '/admin/report-problem'
 export const CONTACT_US_URL = '/contact'
+export const RE_ISSUE_EXISTING_URL = '/certificate-info/certificate'
 
 
 

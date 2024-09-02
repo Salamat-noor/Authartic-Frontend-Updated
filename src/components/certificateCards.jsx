@@ -33,7 +33,7 @@ const CertificateCard = ({ data }) => {
       </div>
       <div className="w-full sm:w-1/2 flex-col pl-[5vw] items-center sm:items-end justify-center gap-3 flex">
         <Link
-          href={`/issue-certificate/?saved_draft=${data?.saved_draft}&id=${data?.id}`}
+          href={`/issue-certificate/?saved_draft=${data?.saved_draft}&id=${data?.id}&btn=issueMore`}
         >
           <Button
             className={`bg-[#22477F] text-white w-[189px] h-[26px] hover:text-black rounded-[7px] font-bold font-kodchasan md:text-[16px] lg:text-[20px] capitalize leading-[26px]`}
@@ -41,13 +41,15 @@ const CertificateCard = ({ data }) => {
             Issue More
           </Button>
         </Link>
-        <Button
-          className={`bg-[#22477F] text-white w-[189px] h-[26px] hover:text-black  rounded-[7px] font-bold font-kodchasan md:text-[16px] lg:text-[20px] capitalize leading-[26px]`}
-        >
-          Reissue existing
-        </Button>
+        <Link href={`/issue-certificate/?saved_draft=${data?.saved_draft}&id=${data?.id}&btn=reissueExisting`}>
+          <Button
+            className={`bg-[#22477F] text-white w-[189px] h-[26px] hover:text-black  rounded-[7px] font-bold font-kodchasan md:text-[16px] lg:text-[20px] capitalize leading-[26px]`}
+          >
+            Reissue existing
+          </Button>
+        </Link>
         <Link
-          href={`/issue-certificate/?saved_draft=${data?.saved_draft}&id=${data?.id}`}
+          href={`/issue-certificate/?saved_draft=${data?.saved_draft}&id=${data?.id}&btn=reportIssue`}
         >
           <Button
             className={`bg-[#22477F] text-white w-[189px] h-[26px] hover:text-black rounded-[7px] font-bold font-kodchasan md:text-[16px] lg:text-[20px] capitalize leading-[26px]`}
